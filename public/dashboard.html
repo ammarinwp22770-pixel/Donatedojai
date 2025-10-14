@@ -164,6 +164,12 @@ tr.new-row {
     const res = await fetch("/donates");
     const data = await res.json();
 
+    if (!Array.isArray(data) || data.length === 0) {
+      console.warn("⚠️ ไม่มีข้อมูลโดเนทในระบบ");
+      $('#total').text("0");
+      $('#donate-table').html(`<tr><td colspan="5" style="text-align:center;color:#a7b8ff;">ยังไม่มีข้อมูลบริจาค</td></tr>`);
+      return;
+    }
 
     // ✅ เรียงจากใหม่ -> เก่า (แก้กรณี format ไทย)
     allDonates = data.sort((a, b) => {
@@ -208,8 +214,13 @@ tr.new-row {
 
   // 💰 รวมยอดบริจาค
   function updateTotal() {
-    const total = allDonates.reduce((sum, d) => sum + parseFloat(d.amount || 0), 0);
-    $('#total').text(total.toLocaleString());
+    // แปลงค่าจำนวนเงินให้เป็นตัวเลขจริงก่อนรวม
+    const total = allDonates.reduce((sum, d) => {
+      const amt = parseFloat(String(d.amount).replace(/[^0-9.]/g, "")) || 0;
+      return sum + amt;
+    }, 0);
+
+    $('#total').text(total.toLocaleString("th-TH", { minimumFractionDigits: 0 }));
   }
 
   // 🧩 กด Alert แล้วเด้ง OBS จริง (ไม่เพิ่มเข้า Dashboard)
@@ -251,10 +262,6 @@ tr.new-row {
   // ✨ เอฟเฟกต์กระพริบยอดรวม
   function glowTotal() {
     $('.total-box').css({ textShadow: '0 0 20px #47ffa1' });
-    <div class="stats">
-      🔼 ยอดสูงสุด: <span id="max">0</span> บาท |
-      ⚖️ เฉลี่ย: <span id="avg">0</span> บาท
-    </div>
     setTimeout(() => $('.total-box').css({ textShadow: 'none' }), 800);
   }
 
@@ -307,15 +314,6 @@ tr.new-row {
       comment: d.comment || "-",
       time: new Date().toLocaleString("th-TH")
     });
-
-    function updateStats() {
-      if (allDonates.length === 0) return;
-      const amounts = allDonates.map(d => parseFloat(d.amount) || 0);
-      const max = Math.max(...amounts);
-      const avg = (amounts.reduce((a, b) => a + b, 0) / amounts.length).toFixed(2);
-      $('#max').text(max.toLocaleString());
-      $('#avg').text(avg);
-    }
 
     currentPage = 1; // ✅ กลับมาหน้าแรก
     renderPage(currentPage);
