@@ -34,6 +34,36 @@ const wss = new WebSocketServer({ server, path: "/ws" });
 // ✅ เมื่อมี client เชื่อมต่อเข้ามา (OBS)
 wss.on("connection", () => console.log("🟢 WebSocket ใหม่เชื่อมต่อเข้ามาแล้ว!"));
 
+
+// ✅ ระบบ Queue สำหรับ Alert (แก้ปัญหา alert ทับกัน)
+let alertQueue = [];
+let isBroadcasting = false;
+
+function broadcastNext() {
+  if (alertQueue.length === 0) {
+    isBroadcasting = false;
+    return;
+  }
+  isBroadcasting = true;
+  const data = alertQueue.shift();
+
+  // ส่งให้ทุก client ที่เชื่อมอยู่
+  wss.clients.forEach(c => {
+    if (c.readyState === 1) {
+      c.send(JSON.stringify(data));
+    }
+  });
+
+  // รอ 6 วินาทีค่อยส่ง alert ถัดไป
+  setTimeout(broadcastNext, 6000);
+}
+
+// 📢 ใช้แทน wss.broadcast เดิม
+function enqueueBroadcast(type, name, amount, comment) {
+  alertQueue.push({ type, name, amount, comment, time: new Date().toISOString() });
+  if (!isBroadcasting) broadcastNext();
+}
+
 // 🧠 ตัวเก็บข้อมูลโดเนท
 let pendingDonations = []; // [{ name, amount, comment, time }]
 const donateFile = "donates.json";
@@ -108,12 +138,9 @@ app.post("/bankhook", (req, res) => {
 
     console.log(`💖 ตรวจพบยอดเงิน ${amount} บาท จาก ${donorName}`);
     saveDonate(donorName, amount, comment);
-    sendToOBS({
-      type: "donate",
-      name: donorName,
-      amount,
-      comment: comment || "ขอบคุณสำหรับการสนับสนุน 💖"
-    });
+
+    enqueueBroadcast("donate", donorName, amount, comment || "ขอบคุณสำหรับการสนับสนุน 💖");
+
 
     if (pending) {
       pendingDonations = pendingDonations.filter(p => p !== pending);
