@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📊 Dashboard | H0LLoWx Donate</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  background: #0b1020;
+  color: #e9f3ff;
+  font-family: "Prompt", sans-serif;
+}
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+}
+h1 {
+  text-align: center;
+  color: #69eaff;
+  font-size: 32px;
+  letter-spacing: 1px;
+  text-shadow: 0 0 15px #47b3ff88;
+}
+.card {
+  background: #141a35;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.3);
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(circle at top, rgba(71,179,255,0.05), transparent 60%);
+  pointer-events: none;
+}
+.total-box {
+  font-size: 24px;
+  font-weight: 700;
+  color: #47ffa1;
+  margin-bottom: 15px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #2b2f55;
+}
+th {
+  background: #1e254a;
+  color: #69eaff;
+}
+td {
+  color: #fff;
+}
+button.alert-btn {
+  background: #47b3ff;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-family: "Prompt";
+}
+button.alert-btn:hover {
+  background: #69eaff;
+  transform: scale(1.05);
+}
+
+/* 🎨 Pagination ปุ่มสวยเนียน */
+#pagination {
+  text-align: center;
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+#pagination button {
+  background: linear-gradient(145deg, #1b2550, #222b5a);
+  border: 2px solid #47b3ff;
+  color: #e9f3ff;
+  font-family: "Prompt";
+  padding: 8px 18px;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(71,179,255,0.3);
+  transition: all 0.2s ease;
+}
+#pagination button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 18px rgba(105,234,255,0.6);
+  border-color: #69eaff;
+}
+#pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+#pagination #page-info {
+  font-size: 16px;
+  color: #a7b8ff;
+  background: rgba(25,35,70,0.5);
+  border-radius: 10px;
+  padding: 6px 14px;
+  box-shadow: 0 0 10px rgba(71,179,255,0.25) inset;
+  letter-spacing: 0.5px;
+}
+
+/* ✨ แถวใหม่มี glow effect */
+tr.new-row {
+  background: rgba(71,179,255,0.15);
+  animation: highlightFade 2s ease-out;
+}
+@keyframes highlightFade {
+  0% {background: rgba(105,234,255,0.45);}
+  100% {background: transparent;}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h1>📊 Dashboard การบริจาค</h1>
+  <div class="card">
+    <div class="total-box">💰 ยอดบริจาครวม: <span id="total">0</span> บาท</div>
+    <table>
+      <thead>
+        <tr>
+          <th>ชื่อผู้บริจาค</th>
+          <th>จำนวน (บาท)</th>
+          <th>ข้อความ</th>
+          <th>เวลา</th>
+          <th>แจ้งเตือนซ้ำ</th>
+        </tr>
+      </thead>
+      <tbody id="donate-table"></tbody>
+    </table>
+    <div id="pagination"></div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script>
+  let allDonates = [];
+  let currentPage = 1;
+  const perPage = 10;
+
+  // 🌐 โหลดข้อมูลเริ่มต้น
+  async function loadDashboard() {
+    const res = await fetch("/donates");
+    const data = await res.json();
+
+
+    // ✅ เรียงจากใหม่ -> เก่า (แก้กรณี format ไทย)
+    allDonates = data.sort((a, b) => {
+      const parse = t => {
+        // แปลง 13/10/2568 20:40:47 → YYYY-MM-DD HH:mm:ss
+        const [d, m, yTime] = t.split("/");
+        if (!yTime) return 0;
+        const [y, rest] = yTime.split(" ");
+        const year = parseInt(y) - 543; // แปลง พ.ศ. → ค.ศ.
+        return new Date(`${year}-${m}-${d} ${rest}`).getTime();
+      };
+      return parse(b.time) - parse(a.time);
+    });
+
+
+    // ✅ ให้เริ่มที่หน้าแรกเสมอ
+    currentPage = 1;
+    renderPage(currentPage);
+    updateTotal();
+    renderPagination();
+  }
+
+  // 🎯 แสดงข้อมูลตามหน้า
+  function renderPage(page) {
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+    const items = allDonates.slice(start, end);
+
+    $('#donate-table').html(items.map(d => `
+    <tr>
+      <td>${d.name}</td>
+      <td>${d.amount}</td>
+      <td>${d.comment || "-"}</td>
+      <td>${d.time}</td>
+      <td><button class="alert-btn" data-name="${d.name}" data-amount="${d.amount}" data-comment="${d.comment || "-"}">🔔 Alert</button></td>
+    </tr>
+  `).join(''));
+
+    bindAlertButtons();
+    $('#page-info').text(`หน้า ${currentPage} / ${Math.ceil(allDonates.length / perPage)}`);
+  }
+
+  // 💰 รวมยอดบริจาค
+  function updateTotal() {
+    const total = allDonates.reduce((sum, d) => sum + parseFloat(d.amount || 0), 0);
+    $('#total').text(total.toLocaleString());
+  }
+
+  // 🧩 กด Alert แล้วเด้ง OBS จริง (ไม่เพิ่มเข้า Dashboard)
+  async function bindAlertButtons() {
+      $('.alert-btn').off('click').on('click', async function () {
+        const name = $(this).data('name');
+        const amount = $(this).data('amount');
+        const comment = $(this).data('comment') || "ขอบคุณสำหรับการสนับสนุน 💖";
+
+        const res = await fetch("/test-alert", { // ✅ เก็บไว้ในตัวแปร res
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            amount,
+            comment,
+            type: "alert_repeat"
+          })
+        });
+
+        const result = await res.json();
+        if (result.ok) {
+          console.log(`✅ แจ้งเตือนซ้ำสำเร็จ (${name} - ${amount}฿)`);
+        } else {
+          console.warn("❌ ส่ง Alert ไม่สำเร็จ:", result);
+        }
+      });
+    }
+
+  // 🔊 เสียงแจ้งเตือน
+  let currentAudio = null;
+  function playSound() {
+    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+    currentAudio = new Audio("notify.mp3");
+    currentAudio.volume = 0.5;
+    currentAudio.play();
+  }
+
+  // ✨ เอฟเฟกต์กระพริบยอดรวม
+  function glowTotal() {
+    $('.total-box').css({ textShadow: '0 0 20px #47ffa1' });
+    setTimeout(() => $('.total-box').css({ textShadow: 'none' }), 800);
+  }
+
+  // 🔢 Pagination
+  function renderPagination() {
+    const totalPages = Math.ceil(allDonates.length / perPage);
+    $('#pagination').html(`
+    <button id="firstPage" ${currentPage === 1 ? "disabled" : ""}>⏮</button>
+    <button id="prevPage" ${currentPage === 1 ? "disabled" : ""}>⬅️</button>
+    <span id="page-info"></span>
+    <button id="nextPage" ${currentPage === totalPages ? "disabled" : ""}>➡️</button>
+    <button id="lastPage" ${currentPage === totalPages ? "disabled" : ""}>⏭</button>
+  `);
+
+    $('#page-info').text(`หน้า ${currentPage} / ${totalPages || 1}`);
+    $('#firstPage').on('click', () => { currentPage = 1; renderPage(currentPage); renderPagination(); });
+    $('#lastPage').on('click', () => { currentPage = totalPages; renderPage(currentPage); renderPagination(); });
+    $('#prevPage').on('click', () => { if (currentPage > 1) { currentPage--; renderPage(currentPage); renderPagination(); } });
+    $('#nextPage').on('click', () => { if (currentPage < totalPages) { currentPage++; renderPage(currentPage); renderPagination(); } });
+  }
+
+  // 🌐 WebSocket
+  let ws = null;
+  function connectWS() {
+    ws = new WebSocket("ws://localhost:3001");
+    ws.onopen = () => console.log("✅ Dashboard เชื่อม OBS แล้ว");
+    ws.onclose = () => setTimeout(connectWS, 3000);
+    ws.onerror = () => console.log("⚠️ WebSocket Error");
+
+    ws.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+
+      // ✅ โดเนทจริงเท่านั้น (ไม่ใช่จากปุ่ม Alert)
+      if (data.type === "donate" && !data.fromDashboard) {
+        addDonateRealtime(data);
+      }
+    };
+  }
+  connectWS();
+
+  // 📡 เพิ่มข้อมูลเรียลไทม์ (เฉพาะตอนโดเนทจริง)
+  function addDonateRealtime(d) {
+    allDonates.unshift({
+      name: d.name,
+      amount: d.amount,
+      comment: d.comment || "-",
+      time: new Date().toLocaleString("th-TH")
+    });
+
+    currentPage = 1; // ✅ กลับมาหน้าแรก
+    renderPage(currentPage);
+    updateTotal();
+    glowTotal();
+    playSound();
+  }
+
+  // 🚀 เริ่มต้น
+  loadDashboard();
+</script>
+
+</body>
+</html>

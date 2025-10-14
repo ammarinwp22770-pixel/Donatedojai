@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💖 H0LLoWx Event List</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body {
+  margin: 0;
+  background: rgba(0,0,0,0);
+  font-family: "Prompt", sans-serif;
+  color: #e9f3ff;
+  overflow: hidden;
+}
+.event-list {
+  width: 360px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.event {
+  background: rgba(25,35,70,0.8);
+  border: 2px solid #47b3ff60;
+  border-radius: 10px;
+  padding: 10px 14px;
+  box-shadow: 0 0 12px rgba(105,234,255,0.2);
+  animation: slideIn 0.5s ease;
+}
+.event strong {
+  color: #69eaff;
+}
+.amount {
+  color: #47ffa1;
+  font-weight: 700;
+}
+.comment {
+  font-size: 14px;
+  color: #a7b8ff;
+}
+.time {
+  font-size: 12px;
+  color: #8fa0cc;
+  text-align: right;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="event-list" id="event-list"></div>
+
+<script>
+const ws = new WebSocket("ws://localhost:3001");
+ws.onopen = () => console.log("✅ Connected to WebSocket");
+
+function addEvent(d) {
+  const box = document.createElement("div");
+  box.className = "event";
+  box.innerHTML = `
+    <div><strong>${d.name}</strong> <span class="amount">฿${d.amount}</span></div>
+    <div class="comment">"${d.comment || '— ไม่มีข้อความ —'}"</div>
+    <div class="time">${new Date().toLocaleTimeString('th-TH')}</div>
+  `;
+
+  const list = document.getElementById("event-list");
+  list.prepend(box);
+
+  // จำกัดไม่เกิน 6 รายการ
+  if (list.children.length > 6) list.lastChild.remove();
+}
+
+ws.onmessage = e => {
+  const data = JSON.parse(e.data);
+  if (data.type === "donate" || data.type === "test") {
+    addEvent(data);
+  }
+};
+</script>
+
+</body>
+</html>
