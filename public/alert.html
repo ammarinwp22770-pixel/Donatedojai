@@ -264,9 +264,6 @@
       console.log("🗣️ TTS API Response:", data);
       if (!data.audioContent) throw new Error("ไม่มีเสียงจาก Google TTS");
 
-      // ✅ ปลุก AudioContext ก่อนเล่น
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      if (ctx.state === "suspended") await ctx.resume();
 
       // ✅ สร้างเสียงจาก base64
       const audio = new Audio("data:audio/mp3;base64," + data.audioContent);
@@ -284,6 +281,27 @@
     }
   }
 
+  // 🧩 ปลดล็อกเสียงทันทีหลัง OBS โหลดเสร็จ
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      await ctx.resume();
+      const silent = new Audio("data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA...");
+      silent.volume = 0;
+      await silent.play().catch(() => { });
+      console.log("🔓 เสียงถูกปลดล็อกเรียบร้อยแล้ว (OBS/Chrome)");
+    } catch (err) {
+      console.warn("⚠️ ปลดล็อกเสียงไม่สำเร็จ:", err);
+    }
+  });
+
+  // 🧩 ปุ่มลับ (สำหรับทดสอบเสียง alert แบบ manual)
+  window.addEventListener("click", async () => {
+    const s = new Audio("/alert.mp3");
+    s.volume = 1.0;
+    await s.play();
+    console.log("✅ คลิกแล้ว - ระบบเสียงพร้อมใช้งาน");
+  });
 
 
   </script>
