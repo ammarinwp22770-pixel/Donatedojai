@@ -16,11 +16,24 @@
     }
 
     .event-list {
-      width: 360px;
-      padding: 10px;
+      width: 400px;
+      height: 100vh;
+      padding: 10px 14px;
       display: flex;
-      flex-direction: column;
-      gap: 10px;
+      flex-direction: column-reverse;
+      /* ใหม่อยู่ล่างสุด */
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #47b3ff50 transparent;
+    }
+
+    .event-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .event-list::-webkit-scrollbar-thumb {
+      background: #47b3ff90;
+      border-radius: 3px;
     }
 
     .event {
@@ -29,7 +42,8 @@
       border-radius: 10px;
       padding: 10px 14px;
       box-shadow: 0 0 12px rgba(105, 234, 255, 0.2);
-      animation: slideIn 0.4s ease, fadeOut 0.4s ease 14s forwards;
+      animation: slideIn 0.4s ease;
+      margin-bottom: 10px;
     }
 
     .event strong {
@@ -55,19 +69,12 @@
     @keyframes slideIn {
       from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(10px);
       }
 
       to {
         opacity: 1;
         transform: translateY(0);
-      }
-    }
-
-    @keyframes fadeOut {
-      to {
-        opacity: 0;
-        transform: translateY(-10px);
       }
     }
   </style>
@@ -80,7 +87,7 @@
   <script>
     let ws;
 
-    // ✅ ฟังก์ชันเชื่อมต่อ WebSocket อัตโนมัติ (Render / Local ใช้ได้ทั้งคู่)
+    // ✅ ฟังก์ชันเชื่อมต่อ WebSocket (Render / Local ใช้ได้)
     function connectWS() {
       ws = new WebSocket(
         (location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws"
@@ -95,13 +102,13 @@
 
       ws.onmessage = e => {
         const data = JSON.parse(e.data);
-        if (data.type === "donate" || data.type === "test" || data.type === "alert_repeat") {
+        if (["donate", "test", "alert_repeat"].includes(data.type)) {
           addEvent(data);
         }
       };
     }
 
-    // ✅ ฟังก์ชันแสดงรายการใหม่
+    // ✅ ฟังก์ชันเพิ่มรายการใหม่
     function addEvent(d) {
       const box = document.createElement("div");
       box.className = "event";
@@ -112,10 +119,8 @@
   `;
 
       const list = document.getElementById("event-list");
-      list.prepend(box);
-
-      // จำกัดไม่เกิน 6 รายการ
-      if (list.children.length > 6) list.lastChild.remove();
+      list.appendChild(box); // ✅ ใส่เพิ่มเรื่อย ๆ ไม่ลบ
+      list.scrollTo({ top: list.scrollHeight, behavior: "smooth" });
     }
 
     connectWS();

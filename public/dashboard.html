@@ -251,6 +251,10 @@ tr.new-row {
   // ✨ เอฟเฟกต์กระพริบยอดรวม
   function glowTotal() {
     $('.total-box').css({ textShadow: '0 0 20px #47ffa1' });
+    <div class="stats">
+      🔼 ยอดสูงสุด: <span id="max">0</span> บาท |
+      ⚖️ เฉลี่ย: <span id="avg">0</span> บาท
+    </div>
     setTimeout(() => $('.total-box').css({ textShadow: 'none' }), 800);
   }
 
@@ -272,12 +276,14 @@ tr.new-row {
     $('#nextPage').on('click', () => { if (currentPage < totalPages) { currentPage++; renderPage(currentPage); renderPagination(); } });
   }
 
+
   // 🌐 WebSocket
   let ws = null;
   function connectWS() {
-    ws = new WebSocket(
-      (location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws"
-    );
+    // ✅ รองรับทั้ง localhost และ Render โดยอัตโนมัติ
+    const WS_URL = location.origin.replace(/^http/, "ws") + "/ws";
+    ws = new WebSocket(WS_URL);
+
     ws.onopen = () => console.log("✅ Dashboard เชื่อม OBS แล้ว");
     ws.onclose = () => setTimeout(connectWS, 3000);
     ws.onerror = () => console.log("⚠️ WebSocket Error");
@@ -288,7 +294,6 @@ tr.new-row {
       // ✅ โดเนทจริงเท่านั้น (ไม่ใช่จากปุ่ม Alert)
       if (data.type === "donate" && !data.fromDashboard) {
         addDonateRealtime(data); // เพิ่มโดเนทใหม่เข้า list บนหน้าเว็บ
-        loadDashboard();         // โหลดข้อมูลล่าสุดทั้งหมด (จากไฟล์ donates.json)
       }
     };
   }
@@ -303,16 +308,31 @@ tr.new-row {
       time: new Date().toLocaleString("th-TH")
     });
 
+    function updateStats() {
+      if (allDonates.length === 0) return;
+      const amounts = allDonates.map(d => parseFloat(d.amount) || 0);
+      const max = Math.max(...amounts);
+      const avg = (amounts.reduce((a, b) => a + b, 0) / amounts.length).toFixed(2);
+      $('#max').text(max.toLocaleString());
+      $('#avg').text(avg);
+    }
+
     currentPage = 1; // ✅ กลับมาหน้าแรก
     renderPage(currentPage);
+    
     updateTotal();
     glowTotal();
     playSound();
+    document.querySelector(".container").scrollTo({ top: 0, behavior: "smooth" });
   }
 
   // 🚀 เริ่มต้น
   loadDashboard();
+  setInterval(loadDashboard, 30000); // โหลดใหม่ทุก 30 วิ กันข้อมูลไม่ตรง
+
+  
 </script>
+
 
 </body>
 </html>
