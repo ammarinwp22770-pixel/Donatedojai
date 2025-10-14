@@ -93,9 +93,23 @@
 <body>
 
   <script>
-    const ws = new WebSocket("wss://donatedojai.onrender.com");
-    let isPlaying = false;
-    let alertQueue = [];
+
+  // ✅ ปลดล็อก autoplay สำหรับ OBS / Browser Source
+  document.addEventListener("DOMContentLoaded", () => {
+    const audio = new Audio();
+    audio.muted = true;
+    audio.play().catch(() => { }); // เล่นเสียงเงียบ เพื่อให้เบราว์เซอร์อนุญาต autoplay
+  });
+
+  // ✅ เริ่มระบบ WebSocket หลังจากปลดล็อกเสียงแล้ว
+  const ws = new WebSocket(
+    (location.protocol === "https:" ? "wss://" : "ws://") + location.host
+  );
+
+  let isPlaying = false;
+  let alertQueue = [];
+
+  ws.onopen = () => console.log("✅ OBS Alert Connected");
 
     // ✅ โหลด config ล่าสุดจาก server
     let alertConfig = {};
