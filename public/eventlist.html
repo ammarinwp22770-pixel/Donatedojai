@@ -20,7 +20,7 @@
       height: 100vh;
       padding: 10px 14px;
       display: flex;
-      flex-direction: column-reverse;
+      flex-direction: column;
       /* ใหม่อยู่ล่างสุด */
       overflow-y: auto;
       scrollbar-width: thin;
@@ -109,19 +109,21 @@
     }
 
     // ✅ ฟังก์ชันเพิ่มรายการใหม่
-    function addEvent(d) {
-      const box = document.createElement("div");
-      box.className = "event";
-      box.innerHTML = `
+  function addEvent(d) {
+    const box = document.createElement("div");
+    box.className = "event";
+    box.innerHTML = `
     <div><strong>${d.name}</strong> <span class="amount">฿${d.amount}</span></div>
     <div class="comment">"${d.comment || '— ไม่มีข้อความ —'}"</div>
     <div class="time">${new Date().toLocaleTimeString('th-TH')}</div>
   `;
 
-      const list = document.getElementById("event-list");
-      list.appendChild(box); // ✅ ใส่เพิ่มเรื่อย ๆ ไม่ลบ
-      list.scrollTo({ top: list.scrollHeight, behavior: "smooth" });
-    }
+    const list = document.getElementById("event-list");
+    list.prepend(box); // 👈 เปลี่ยนจาก appendChild เป็น prepend
+
+    // จำกัดจำนวน (ไม่เกิน 50 รายการ)
+    if (list.children.length > 50) list.removeChild(list.lastChild);
+  }
 
     connectWS();
   </script>
