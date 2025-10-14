@@ -261,5 +261,10 @@ app.get("/", (req, res) => {
   res.sendFile("index.html", { root: "public" });
 });
 
+// ✅ เสิร์ฟหน้า alert สำหรับ OBS
+app.get("/alert", (req, res) => {
+  res.sendFile("alert.html", { root: "public" });
+});
+
   // ✅ เริ่มรันเซิร์ฟเวอร์
   app.listen(3000, () => console.log("✅ Server running at http://localhost:3000"));
