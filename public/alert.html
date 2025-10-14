@@ -117,6 +117,12 @@
       console.warn("⚠️ Autoplay unlock failed:", err);
     }
   });
+
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  if (ctx.state === "suspended") {
+    ctx.resume().then(() => console.log("🔊 AudioContext resumed!"));
+  }
+
   // ✅ เริ่มระบบ WebSocket หลังจากปลดล็อกเสียงแล้ว
   const ws = new WebSocket(
     (location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws"
