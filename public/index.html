@@ -253,7 +253,44 @@
         $('#status-box').text("❌ เกิดข้อผิดพลาดในการสร้าง QR");
       }
     }
-  </script>
+
+    
+
+</script>
+
+<script>
+  // 🛡️ ป้องกัน Inspect / View Source / Debug
+  document.addEventListener('contextmenu', event => event.preventDefault()); // ❌ คลิกขวา
+  document.onkeydown = function (e) {
+    // ❌ ปิด F12, Ctrl+Shift+I, Ctrl+U, Ctrl+S, Ctrl+P
+    if (
+      e.keyCode === 123 || // F12
+      (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) || // Ctrl+Shift+I/J/C
+      (e.ctrlKey && ['U', 'S', 'P'].includes(e.key.toUpperCase())) // Ctrl+U/S/P
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      alert("🚫 โหมดนักพัฒนาไม่สามารถใช้งานได้บนหน้านี้");
+      return false;
+    }
+  };
+
+  // 🚫 ป้องกัน console/debug ด้วย loop trick
+  (function () {
+    const handler = setInterval(() => {
+      const before = new Date();
+      debugger; // ดักเปิด Inspect
+      const after = new Date();
+      if (after - before > 100) {
+        document.body.innerHTML =
+          "<h1 style='color:#ff6b6b;text-align:center;margin-top:30vh;'>🚫 การเข้าถึง Developer Tools ถูกปิดใช้งาน</h1>";
+        clearInterval(handler);
+      }
+    }, 1000);
+  })();
+</script>
+
+
 </body>
 
 </html>
