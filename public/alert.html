@@ -107,7 +107,7 @@
 
   // ✅ เริ่มระบบ WebSocket หลังจากปลดล็อกเสียงแล้ว
   const ws = new WebSocket(
-    (location.protocol === "https:" ? "wss://" : "ws://") + location.host
+    (location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws"
   );
 
   let isPlaying = false;
