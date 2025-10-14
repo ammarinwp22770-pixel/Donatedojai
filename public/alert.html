@@ -98,25 +98,16 @@
 
 
   // ✅ ปลดล็อก autoplay สำหรับ OBS / Browser Source แบบถาวร
-  document.addEventListener("DOMContentLoaded", async () => {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const unlock = async () => {
-        // โหลดเสียงเงียบ
-        const res = await fetch("/silent.wav");
-        const arrayBuffer = await res.arrayBuffer();
-        const buffer = await ctx.decodeAudioData(arrayBuffer);
-        const source = ctx.createBufferSource();
-        source.buffer = buffer;
-        source.connect(ctx.destination);
-        source.start(0);
-        console.log("🔓 Audio autoplay unlocked via AudioContext!");
-      };
-      await unlock();
-    } catch (err) {
-      console.warn("⚠️ Autoplay unlock failed:", err);
-    }
+
+  // ✅ ปลดล็อก autoplay แบบเรียบง่าย (ใช้เสียงเงียบ 0.1 วินาที)
+  document.addEventListener("DOMContentLoaded", () => {
+    const silent = new Audio("data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA...");
+    silent.volume = 0;
+    silent.play().then(() => {
+      console.log("🔓 Autoplay unlocked with silent audio!");
+    }).catch(() => { });
   });
+
 
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
   if (ctx.state === "suspended") {
