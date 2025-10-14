@@ -219,7 +219,7 @@
 
   <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
   <script>
-    const ws = new WebSocket("ws://localhost:3001");
+    const ws = new WebSocket("wss://donatedojai.onrender.com");
     ws.onmessage = e => {
       const data = JSON.parse(e.data);
       if (data.type === "donate" || data.type === "payment_done") {
