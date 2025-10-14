@@ -29,7 +29,7 @@ app.post("/upload-popup", upload.single("popupImage"), (req, res) => {
 
 // 🌐 รวม Express + WebSocket ในเซิร์ฟเวอร์เดียว (ใช้พอร์ตเดียว)
 const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({ server, path: "/ws" });
 
 // ✅ เมื่อมี client เชื่อมต่อเข้ามา (OBS)
 wss.on("connection", () => console.log("🟢 WebSocket ใหม่เชื่อมต่อเข้ามาแล้ว!"));
