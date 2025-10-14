@@ -42,7 +42,7 @@
       border-radius: 10px;
       padding: 10px 14px;
       box-shadow: 0 0 12px rgba(105, 234, 255, 0.2);
-      animation: slideIn 0.4s ease;
+       animation: slideIn 0.3s ease; /* ไม่มี fadeOut */
       margin-bottom: 10px;
     }
 
@@ -119,13 +119,21 @@
   `;
 
     const list = document.getElementById("event-list");
-    list.prepend(box); // 👈 เปลี่ยนจาก appendChild เป็น prepend
 
-    // จำกัดจำนวน (ไม่เกิน 50 รายการ)
-    if (list.children.length > 50) list.removeChild(list.lastChild);
+    // ✅ เพิ่มใหม่ไว้บนสุด
+    list.prepend(box);
+
+    // 🧹 จำกัดรายการไม่ให้เกิน 50 อัน (กันหน่วง)
+    if (list.children.length > 50) {
+      list.removeChild(list.lastChild);
+    }
+
+    // ✅ Scroll ขึ้นบนสุดทุกครั้งที่มีอันใหม่
+    list.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-    connectWS();
+  connectWS();
+
   </script>
 
 </body>
