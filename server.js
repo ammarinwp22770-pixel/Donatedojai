@@ -6,6 +6,7 @@ import QRCode from "qrcode";
 import generatePayload from "promptpay-qr";
 import multer from "multer";
 import http from "http";
+import path from "path"; // ✅ เพิ่มตรงนี้สำคัญมาก!
 
 const app = express();
 app.use(bodyParser.json());
@@ -34,7 +35,6 @@ const wss = new WebSocketServer({ server, path: "/ws" });
 // ✅ เมื่อมี client เชื่อมต่อเข้ามา (OBS)
 wss.on("connection", () => console.log("🟢 WebSocket ใหม่เชื่อมต่อเข้ามาแล้ว!"));
 
-
 // ✅ ระบบ Queue สำหรับ Alert (แก้ปัญหา alert ทับกัน)
 let alertQueue = [];
 let isBroadcasting = false;
@@ -47,18 +47,13 @@ function broadcastNext() {
   isBroadcasting = true;
   const data = alertQueue.shift();
 
-  // ส่งให้ทุก client ที่เชื่อมอยู่
   wss.clients.forEach(c => {
-    if (c.readyState === 1) {
-      c.send(JSON.stringify(data));
-    }
+    if (c.readyState === 1) c.send(JSON.stringify(data));
   });
 
-  // รอ 6 วินาทีค่อยส่ง alert ถัดไป
-  setTimeout(broadcastNext, 6000);
+  setTimeout(broadcastNext, 6000); // หน่วง 6 วิ
 }
 
-// 📢 ใช้แทน wss.broadcast เดิม
 function enqueueBroadcast(type, name, amount, comment) {
   alertQueue.push({ type, name, amount, comment, time: new Date().toISOString() });
   if (!isBroadcasting) broadcastNext();
@@ -66,7 +61,7 @@ function enqueueBroadcast(type, name, amount, comment) {
 
 // 🧠 ตัวเก็บข้อมูลโดเนท
 let pendingDonations = []; // [{ name, amount, comment, time }]
-const donateFile = "donates.json";
+const donateFile = path.join(process.cwd(), "donates.json"); // ✅ ใช้ path เดียวกันทุก environment
 if (!fs.existsSync(donateFile)) fs.writeFileSync(donateFile, "[]", "utf8");
 
 // 💾 ฟังก์ชันบันทึกข้อมูลโดเนท
@@ -74,7 +69,7 @@ function saveDonate(name, amount, comment = "") {
   const data = JSON.parse(fs.readFileSync(donateFile, "utf8"));
   const record = { name, amount, comment, time: new Date().toLocaleString("th-TH") };
   data.unshift(record);
-  fs.writeFileSync(donateFile, JSON.stringify(data, null, 2));
+  fs.writeFileSync(donateFile, JSON.stringify(data, null, 2), "utf8");
   console.log("💾 บันทึกโดเนท:", record);
 }
 
@@ -113,10 +108,15 @@ app.post("/generateQR", (req, res) => {
   });
 });
 
-// ✅ ดึงรายชื่อโดเนทย้อนหลัง
+// ✅ ดึงรายชื่อโดเนทย้อนหลัง (แก้ให้ดึงไฟล์ใหม่ทุกครั้ง)
 app.get("/donates", (req, res) => {
-  const data = JSON.parse(fs.readFileSync(donateFile, "utf8"));
-  res.json(data.reverse());
+  try {
+    const data = JSON.parse(fs.readFileSync(donateFile, "utf8"));
+    res.json(data.reverse());
+  } catch (err) {
+    console.error("❌ อ่าน donates.json ไม่ได้:", err);
+    res.json([]);
+  }
 });
 
 // ✅ รับ webhook จากมือถือ (Tasker)
@@ -140,7 +140,6 @@ app.post("/bankhook", (req, res) => {
     saveDonate(donorName, amount, comment);
 
     enqueueBroadcast("donate", donorName, amount, comment || "ขอบคุณสำหรับการสนับสนุน 💖");
-
 
     if (pending) {
       pendingDonations = pendingDonations.filter(p => p !== pending);
@@ -228,12 +227,8 @@ setInterval(() => {
     console.log(`🧹 ล้าง QR เก่าทิ้ง ${before - pendingDonations.length} รายการ`);
 }, 60000);
 
-app.get("/ws", (req, res) => {
-  res.sendStatus(200); // dummy endpoint ให้ Render รู้ว่ามี /ws จริง
-});
-
+app.get("/ws", (req, res) => res.sendStatus(200));
 app.get("/dashboard", (req, res) => res.sendFile("dashboard.html", { root: "public" }));
-
 app.get("/eventlist", (req, res) => res.sendFile("eventlist.html", { root: "public" }));
 
 // ✅ เริ่มรันเซิร์ฟเวอร์

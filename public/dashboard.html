@@ -161,7 +161,7 @@ tr.new-row {
 
   // 🌐 โหลดข้อมูลเริ่มต้น
   async function loadDashboard() {
-    const res = await fetch("/donates");
+   const res = await fetch("/donates?" + Date.now(), { cache: "no-store" });
     const data = await res.json();
 
     if (!Array.isArray(data) || data.length === 0) {
