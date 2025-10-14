@@ -116,10 +116,6 @@
 
 
 
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  if (ctx.state === "suspended") {
-    ctx.resume().then(() => console.log("🔊 AudioContext resumed!"));
-  }
 
   // ✅ เริ่มระบบ WebSocket หลังจากปลดล็อกเสียงแล้ว
   const ws = new WebSocket(
@@ -277,6 +273,7 @@
       audio.volume = 1.0;
 
       // ✅ รอให้ browser อนุญาต แล้วค่อยเล่น
+      await new Promise(r => setTimeout(r, 150)); // รอระบบเสียงพร้อม
       audio.oncanplaythrough = () => {
         audio.play().catch(err => console.error("❌ เล่นเสียงพูดไม่ได้:", err));
       };
