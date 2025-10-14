@@ -275,7 +275,9 @@ tr.new-row {
   // 🌐 WebSocket
   let ws = null;
   function connectWS() {
-    ws = new WebSocket("ws://localhost:3001");
+    ws = new WebSocket(
+      (location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws"
+    );
     ws.onopen = () => console.log("✅ Dashboard เชื่อม OBS แล้ว");
     ws.onclose = () => setTimeout(connectWS, 3000);
     ws.onerror = () => console.log("⚠️ WebSocket Error");
@@ -285,7 +287,8 @@ tr.new-row {
 
       // ✅ โดเนทจริงเท่านั้น (ไม่ใช่จากปุ่ม Alert)
       if (data.type === "donate" && !data.fromDashboard) {
-        addDonateRealtime(data);
+        addDonateRealtime(data); // เพิ่มโดเนทใหม่เข้า list บนหน้าเว็บ
+        loadDashboard();         // โหลดข้อมูลล่าสุดทั้งหมด (จากไฟล์ donates.json)
       }
     };
   }
