@@ -114,14 +114,6 @@
     }
   });
 
-  // ✅ ปลดล็อก autoplay แบบเรียบง่าย (ใช้เสียงเงียบ 0.1 วินาที)
-  document.addEventListener("DOMContentLoaded", () => {
-    const silent = new Audio("data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA...");
-    silent.volume = 0;
-    silent.play().then(() => {
-      console.log("🔓 Autoplay unlocked with silent audio!");
-    }).catch(() => { });
-  });
 
 
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -217,14 +209,11 @@
         const alertSound = new Audio(alertConfig.sound || "alert.mp3");
         alertSound.volume = 0.9;
         alertSound.onended = async () => {
-          await new Promise(r => setTimeout(r, 300)); // รอ 0.3 วิ
-          const ttsUrl = await generateTTS(`ขอบคุณ ${name} สำหรับการสนับสนุน ${amount} บาท ${comment || ""}`);
+          // รอ 0.3 วิหลังเสียงโดเนท
+          await new Promise(r => setTimeout(r, 300));
 
-          // เล่นต่อจากเสียง alert เดิม (รวมไว้ใน queue เดียว)
-          const ttsAudio = new Audio(ttsUrl);
-          ttsAudio.volume = 1.0;
-          await ttsAudio.play().catch(err => console.error("❌ TTS play error:", err));
-
+          console.log("🔊 เริ่มพูดข้อความ TTS...");
+          await generateTTS(`ขอบคุณ ${name} สำหรับการสนับสนุน ${amount} บาท ${comment || ""}`);
           resolve();
         };
         await alertSound.play().catch(err => console.error("❌ เล่นเสียงไม่ได้:", err));
@@ -258,6 +247,7 @@
     // 🗣️ ฟังก์ชันพูด (Google TTS)
   // 🗣️ ฟังก์ชันพูด (Google TTS)
   // 🗣️ ฟังก์ชันพูด (Google TTS)
+  // 🎤 ฟังก์ชัน Google TTS ที่พร้อมใช้งานกับ OBS
   async function generateTTS(text) {
     try {
       const apiKey = "AIzaSyAZBK3w7-bz8vNJHG3638buKoRRBRQDMWU";
@@ -275,26 +265,28 @@
       });
 
       const data = await res.json();
-      if (!data.audioContent) throw new Error("ไม่มีเสียงจาก API");
+      console.log("🗣️ TTS API Response:", data);
+      if (!data.audioContent) throw new Error("ไม่มีเสียงจาก Google TTS");
 
-      // ✅ Resume context ก่อนเล่น TTS (บางเบราว์เซอร์จะ block ถ้าไม่ resume)
+      // ✅ ปลุก AudioContext ก่อนเล่น
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      if (ctx.state === "suspended") {
-        await ctx.resume();
-        console.log("🔊 AudioContext resumed before TTS play");
-      }
+      if (ctx.state === "suspended") await ctx.resume();
 
-      const ttsUrl = "data:audio/mp3;base64," + data.audioContent;
-      const audio = new Audio(ttsUrl);
+      // ✅ สร้างเสียงจาก base64
+      const audio = new Audio("data:audio/mp3;base64," + data.audioContent);
       audio.volume = 1.0;
-      await audio.play().catch(err => console.error("❌ TTS play error:", err));
-      return ttsUrl;
+
+      // ✅ รอให้ browser อนุญาต แล้วค่อยเล่น
+      audio.oncanplaythrough = () => {
+        audio.play().catch(err => console.error("❌ เล่นเสียงพูดไม่ได้:", err));
+      };
+      audio.load();
 
     } catch (err) {
       console.error("❌ generateTTS Error:", err);
-      return null;
     }
   }
+
 
 
   </script>
