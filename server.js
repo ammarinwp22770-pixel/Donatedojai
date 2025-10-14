@@ -232,6 +232,8 @@ app.get("/ws", (req, res) => {
   res.sendStatus(200); // dummy endpoint ให้ Render รู้ว่ามี /ws จริง
 });
 
+app.get("/dashboard", (req, res) => res.sendFile("dashboard.html", { root: "public" }));
+
 // ✅ เริ่มรันเซิร์ฟเวอร์
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
