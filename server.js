@@ -201,6 +201,10 @@ setInterval(() => {
     console.log(`🧹 ล้าง QR เก่าทิ้ง ${before - pendingDonations.length} รายการ`);
 }, 60000);
 
+app.get("/ws", (req, res) => {
+  res.sendStatus(200); // dummy endpoint ให้ Render รู้ว่ามี /ws จริง
+});
+
 // ✅ เริ่มรันเซิร์ฟเวอร์
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));

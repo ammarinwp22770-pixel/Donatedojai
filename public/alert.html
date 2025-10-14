@@ -211,7 +211,14 @@
         const alertSound = new Audio(alertConfig.sound || "alert.mp3");
         alertSound.volume = 0.9;
         alertSound.onended = async () => {
-          await speakThai(`ขอบคุณ ${name} สำหรับการสนับสนุน ${amount} บาท ${comment || ""}`);
+          // ดึงเสียงจาก Google TTS
+          const ttsUrl = await generateTTS(`ขอบคุณ ${name} สำหรับการสนับสนุน ${amount} บาท ${comment || ""}`);
+
+          // เล่นต่อจากเสียง alert เดิม (รวมไว้ใน queue เดียว)
+          const ttsAudio = new Audio(ttsUrl);
+          ttsAudio.volume = 1.0;
+          await ttsAudio.play().catch(err => console.error("❌ TTS play error:", err));
+
           resolve();
         };
         await alertSound.play().catch(err => console.error("❌ เล่นเสียงไม่ได้:", err));
@@ -244,7 +251,7 @@
 
     // 🗣️ ฟังก์ชันพูด (Google TTS)
   // 🗣️ ฟังก์ชันพูด (Google TTS)
-  async function speakThai(text) {
+ async function generateTTS(text) {
     try {
       const apiKey = "AIzaSyAZBK3w7-bz8vNJHG3638buKoRRBRQDMWU";
       const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`;
@@ -253,22 +260,19 @@
         voice: { languageCode: "th-TH", name: "th-TH-Standard-A" },
         audioConfig: { audioEncoding: "MP3", speakingRate: 0.9 }
       };
+
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
       });
+
       const data = await res.json();
       if (!data.audioContent) throw new Error("ไม่มีเสียงจาก API");
-
-      // ✅ รอ 0.2 วิให้แน่ใจว่าปลดล็อกเสียงแล้ว
-      await new Promise(r => setTimeout(r, 200));
-
-      const audio = new Audio("data:audio/mp3;base64," + data.audioContent);
-      audio.volume = 1.0;
-      await audio.play();
+      return "data:audio/mp3;base64," + data.audioContent;
     } catch (err) {
-      console.error("❌ Google TTS Error:", err);
+      console.error("❌ generateTTS Error:", err);
+      return null;
     }
   }
 
