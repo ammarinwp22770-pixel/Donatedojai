@@ -28,8 +28,14 @@ app.post("/upload-popup", upload.single("popupImage"), (req, res) => {
   res.json({ path: imagePath });
 });
   // 🌐 WebSocket สำหรับ OBS
-  const wss = new WebSocketServer({ port: 3001 });
-  wss.on("connection", () => console.log("🟢 WebSocket ใหม่เชื่อมต่อเข้ามาแล้ว!"));
+ import http from "http";
+
+// ✅ สร้าง server กลางที่รวม Express + WebSocket
+const server = http.createServer(app);
+const wss = new WebSocketServer({ server });
+
+// ✅ แสดง log เมื่อมี client ต่อ WebSocket
+wss.on("connection", () => console.log("🟢 WebSocket ใหม่เชื่อมต่อเข้ามาแล้ว!"));
 
   // 🧠 ตัวเก็บ QR ที่รอการโอนจริง
   let pendingDonations = []; // [{ name, amount, comment, time }]
@@ -267,5 +273,5 @@ app.get("/alert", (req, res) => {
 });
 
   // ✅ เริ่มรันเซิร์ฟเวอร์
- const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
