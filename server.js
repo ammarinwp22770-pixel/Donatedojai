@@ -256,7 +256,10 @@ app.post("/save-config", (req, res) => {
 });
 
 
-
+// ✅ เสิร์ฟหน้าเว็บหลัก index.html
+app.get("/", (req, res) => {
+  res.sendFile("index.html", { root: "public" });
+});
 
   // ✅ เริ่มรันเซิร์ฟเวอร์
   app.listen(3000, () => console.log("✅ Server running at http://localhost:3000"));
