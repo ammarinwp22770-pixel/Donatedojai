@@ -97,20 +97,18 @@
 
 
 
-  // ✅ ปลดล็อก autoplay สำหรับ OBS / Browser Source แบบถาวร
-
-  // ✅ ปลดล็อกเสียงให้ OBS / Chrome ยอมเล่นอัตโนมัติ
+  // ✅ ปลดล็อกเสียงอัตโนมัติสำหรับ OBS / Chrome
   window.addEventListener("load", async () => {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const oscillator = ctx.createOscillator();
-      const gainNode = ctx.createGain();
-      gainNode.gain.value = 0; // เสียงเบา (เงียบ)
-      oscillator.connect(gainNode).connect(ctx.destination);
+      const gain = ctx.createGain();
+      gain.gain.value = 0; // เสียงเงียบ
+      oscillator.connect(gain).connect(ctx.destination);
       oscillator.start();
       oscillator.stop(ctx.currentTime + 0.05);
       await ctx.resume();
-      console.log("🔓 Audio unlocked via oscillator pulse");
+      console.log("🔓 Audio unlocked successfully for OBS!");
     } catch (err) {
       console.warn("⚠️ Autoplay unlock failed:", err);
     }
