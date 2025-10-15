@@ -237,11 +237,6 @@
     <input type="text" id="comment" placeholder="ข้อความแสดงบนหน้าจอ เช่น ดูทีม 20 บาท ❤️">
 <button onclick="generateQR()">⚡ สร้าง QR โดเนท</button>
 
-<!-- ✅ ซ่อน CAPTCHA Cloudflare ไว้ก่อน -->
-<div id="turnstile-box" style="display:none; margin-top:15px; text-align:center;">
-  <div class="cf-turnstile" data-sitekey="0x4AAAAAAB6qa7Fg3qEUiBuc" data-callback="onTurnstileSuccess">
-  </div>
-</div>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
     <div id="qr-box"></div>
@@ -323,85 +318,60 @@
   let token = "";
 
     // 🌐 Callback จาก Cloudflare เมื่อยืนยันเสร็จ
-    function onTurnstileSuccess(t) {
+   function onTurnstileSuccess(t) {
       token = t;
       console.log("✅ Turnstile success:", t);
-      $("#overlay").fadeOut(300);
-      actuallyGenerateQR(); // เริ่มสร้าง QR จริง
+      $('#overlay').fadeOut(300); // ✅ ซ่อน overlay หลังผ่าน
+      actuallyGenerateQR();
     }
-
     // ⚡ ฟังก์ชันที่ถูกเรียกเมื่อกด “สร้าง QR โดเนท”
     // ⚡ ฟังก์ชันที่ถูกเรียกเมื่อกด “สร้าง QR โดเนท”
-      async function generateQR() {
-        token = "";
-        $('#qr-box').empty();
-        $('#status-box').html("");
-        $('#loader').hide();
+  async function generateQR() {
+    token = "";
+    $('#qr-box').empty();
+    $('#status-box').html("");
+    $('#loader').hide();
 
-        // แสดง overlay + CAPTCHA
-        $("#overlay").fadeIn(300);
+    // ✅ แสดง overlay + Turnstile
+    $('#overlay').fadeIn(300);
+    $('#turnstile-box').fadeIn(300);
 
         // 🔁 เอฟเฟกต์โหลดก่อนรีเซ็ต CAPTCHA
-        const $turnstileBox = $("#turnstile-box");
-        $turnstileBox.css({
-          opacity: "0.3",
-          pointerEvents: "none"
-        }).append(`
-    <div id="cf-loader" style="
-      margin-top:15px;
-      width:36px;
-      height:36px;
-      border:4px solid rgba(255,255,255,.2);
-      border-top:4px solid #69eaff;
-      border-radius:50%;
-      animation: spin 0.8s linear infinite;
-      display:inline-block;">
-    </div>
-  `);
-
-        // 🌀 หมุนโหลดสั้น ๆ ก่อน reset (0.7 วิ)
-        setTimeout(() => {
-          if (window.turnstile) turnstile.reset();
-
-          $("#cf-loader").remove();
-          $turnstileBox.css({
-            opacity: "1",
-            pointerEvents: "auto"
-          });
-        }, 700);
       }
 
     // ⚙️ สร้าง QR จริงหลังผ่าน CAPTCHA
     async function actuallyGenerateQR() {
-      const amount = parseFloat($('#amount').val());
-      const name = $('#msg').val().trim() || "ไม่ระบุชื่อ";
-      const comment = $('#comment').val().trim() || "";
+        const amount = parseFloat($('#amount').val());
+        const name = $('#msg').val().trim() || "ไม่ระบุชื่อ";
+        const comment = $('#comment').val().trim() || "";
 
-      if (!amount) return alert("กรุณาระบุจำนวนเงิน");
+        if (!amount) return alert("กรุณาระบุจำนวนเงิน");
 
-      $('#status-box').html("🕓 กำลังสร้าง QR...");
-      $('#loader').show();
+        $('#status-box').html("🕓 กำลังสร้าง QR...");
+        $('#loader').show();
 
-      try {
-        const res = await fetch("/generateQR", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amount, name, comment, token })
-        });
-        const data = await res.json();
+        try {
+          const res = await fetch("/generateQR", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amount, name, comment, token })
+          });
+          const data = await res.json();
 
-        $('#loader').hide();
-        $('#qr-box').html(`<img src="${data.result}" alt="QR พร้อมเพย์">`);
-        $('#status-box').html(`
-      ⚠️ กรุณาชำระเงินภายใน <b id="timer">05:00</b> นาที<br>
-      หากสแกนแล้วไม่หายไม่ต้องตกใจ<br>
-      รอสักครู่...ให้ระบบตรวจสอบเงินจริงที่โอน
-    `);
-        startCountdown();
-      } catch (err) {
-        $('#status-box').text("❌ เกิดข้อผิดพลาดในการสร้าง QR");
+          $('#loader').hide();
+          $('#qr-box').html(`<img src="${data.result}" alt="QR พร้อมเพย์">`);
+          $('#status-box').html(`
+        ⚠️ กรุณาชำระเงินภายใน <b id="timer">05:00</b> นาที<br>
+        หากสแกนแล้วไม่หายไม่ต้องตกใจ<br>
+        รอสักครู่...ให้ระบบตรวจสอบเงินจริงที่โอน
+      `);
+          $('#turnstile-box').fadeOut(300); // ซ่อน CAPTCHA หลังใช้งาน
+          turnstile.reset(); // ✅ รีเซ็ต Cloudflare Turnstile ให้พร้อมใช้รอบใหม่
+          startCountdown();
+        } catch (err) {
+          $('#status-box').text("❌ เกิดข้อผิดพลาดในการสร้าง QR");
+        }
       }
-    }
 
     // 🕒 นับถอยหลัง 5 นาที
     function startCountdown() {
