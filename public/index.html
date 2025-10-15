@@ -217,11 +217,14 @@
     <textarea id="msg" placeholder="ชื่อของคุณ (จะโชว์บนสตรีม)" rows="2"></textarea>
     <input type="number" id="amount" placeholder="จำนวนเงิน (บาท)">
     <input type="text" id="comment" placeholder="ข้อความแสดงบนหน้าจอ เช่น ดูทีม 20 บาท ❤️">
-    <button onclick="generateQR()">⚡ สร้าง QR โดเนท</button>
+<button onclick="generateQR()">⚡ สร้าง QR โดเนท</button>
 
-    <!-- ✅ CAPTCHA Cloudflare -->
-    <div class="cf-turnstile" data-sitekey="0x4AAAAAAB6qa7Fg3qEUiBuc"></div>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<!-- ✅ ซ่อน CAPTCHA Cloudflare ไว้ก่อน -->
+<div id="turnstile-box" style="display:none; margin-top:15px; text-align:center;">
+  <div class="cf-turnstile" data-sitekey="0x4AAAAAAB6qa7Fg3qEUiBuc" data-callback="onTurnstileSuccess">
+  </div>
+</div>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
     <div id="qr-box"></div>
     <div id="loader">
@@ -251,11 +254,11 @@
   <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
   <script>
   const ws = new WebSocket(
-    (location.protocol === "https:" ? "wss://" : "ws://") +
-    location.host +
-    "/ws"
-  );
-    ws.onmessage = e => {
+      (location.protocol === "https:" ? "wss://" : "ws://") +
+      location.host +
+      "/ws"
+    );
+  ws.onmessage = e => {
       const data = JSON.parse(e.data);
       if (data.type === "donate" || data.type === "payment_done") {
         $("#qr-box").fadeOut(700, () => $("#qr-box").empty().show());
@@ -264,67 +267,6 @@
         $("#status-box").html("✅ การชำระเงินสำเร็จ! พร้อมรับโดเนทใหม่ 💖");
       }
     };
-async function generateQR() {
-  const amount = parseFloat($('#amount').val());
-  const name = $('#msg').val().trim() || "ไม่ระบุชื่อ";
-  const comment = $('#comment').val().trim() || "";
-   const token = document.querySelector('input[name="cf-turnstile-response"]')?.value || "";
-      if (!amount) return alert("กรุณาระบุจำนวนเงิน");
-
-      $('#status-box').html("🕓 กำลังสร้าง QR...");
-      $('#qr-box').empty();
-      $('#loader').show();
-
-      try {
-        const res = await fetch("/generateQR", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amount, name, comment, token })
-        });
-        const data = await res.json();
-
-    $('#loader').hide();
-    $('#qr-box').html(`<img src="${data.result}" alt="QR พร้อมเพย์">`);
-    $('#loader').show();
-
-    // ✅ เพิ่มกล่อง countdown พร้อมวงกลมหมุน
-    $('#status-box').html(`
-      <div id="countdownBox" style="text-align:center;">
-        <div class="circle-loader"></div>
-        <div style="margin-top:8px;line-height:1.6;">
-          ⚠️ กรุณาชำระเงินภายใน 
-          <b id="timer">05:00</b> นาที<br>
-          หากสแกน QR แล้วไม่หายไม่ต้องตกใจ<br>
-          รอสักครู่...ให้ระบบตรวจสอบเงินจริงที่โอน
-        </div>
-      </div>
-    `);
-
-    // 🕒 เริ่มนับถอยหลัง
-    let timeLeft = 300;
-    const timerDisplay = document.getElementById("timer");
-    const countdown = setInterval(() => {
-      timeLeft--;
-      const minutes = Math.floor(timeLeft / 60).toString().padStart(2, "0");
-      const seconds = (timeLeft % 60).toString().padStart(2, "0");
-      timerDisplay.textContent = `${minutes}:${seconds}`;
-      if (timeLeft <= 0) {
-        clearInterval(countdown);
-        $('#status-box').html(`
-          ⏰ เกินระยะเวลา 5 นาทีแล้ว<br>
-          <small style="color:#ff6b6b;">กรุณาสร้าง QR ใหม่เพื่อทำรายการอีกครั้ง</small>
-        `);
-        $('#qr-box').fadeOut(800);
-      }
-    }, 1000);
-  } catch (err) {
-    $('#status-box').text("❌ เกิดข้อผิดพลาดในการสร้าง QR");
-  }
-}
-
-
-    
-
 </script>
 
 <script>
@@ -357,6 +299,82 @@ async function generateQR() {
       }
     }, 1000);
   })();
+</script>
+
+<script>
+  let token = "";
+
+  // 🌐 Cloudflare Turnstile callback เมื่อยืนยันเสร็จ
+  function onTurnstileSuccess(t) {
+      token = t;
+      console.log("✅ Turnstile success:", t);
+      actuallyGenerateQR(); // เริ่มสร้าง QR จริง
+    }
+
+    // ⚡ ฟังก์ชันที่ถูกเรียกเมื่อกดปุ่ม “สร้าง QR โดเนท”
+    async function generateQR() {
+      // รีเซตทุกอย่าง
+      token = "";
+      $('#qr-box').empty();
+      $('#status-box').html("");
+      $('#loader').hide();
+
+      // แสดง CAPTCHA Cloudflare
+      $('#turnstile-box').fadeIn(300);
+    }
+
+  // ⚙️ สร้าง QR จริงหลังจากผ่าน CAPTCHA
+ async function actuallyGenerateQR() {
+    const amount = parseFloat($('#amount').val());
+    const name = $('#msg').val().trim() || "ไม่ระบุชื่อ";
+    const comment = $('#comment').val().trim() || "";
+
+    if (!amount) return alert("กรุณาระบุจำนวนเงิน");
+
+    $('#status-box').html("🕓 กำลังสร้าง QR...");
+    $('#loader').show();
+
+    try {
+      const res = await fetch("/generateQR", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount, name, comment, token })
+      });
+      const data = await res.json();
+
+      $('#loader').hide();
+      $('#qr-box').html(`<img src="${data.result}" alt="QR พร้อมเพย์">`);
+      $('#status-box').html(`
+        ⚠️ กรุณาชำระเงินภายใน <b id="timer">05:00</b> นาที<br>
+        หากสแกนแล้วไม่หายไม่ต้องตกใจ<br>
+        รอสักครู่...ให้ระบบตรวจสอบเงินจริงที่โอน
+      `);
+      $('#turnstile-box').fadeOut(300); // ซ่อน Turnstile หลังใช้งาน
+      startCountdown();
+    } catch (err) {
+      $('#status-box').text("❌ เกิดข้อผิดพลาดในการสร้าง QR");
+    }
+  }
+
+  // 🕒 นับถอยหลัง 5 นาที
+   function startCountdown() {
+      let timeLeft = 300;
+      const timerDisplay = document.getElementById("timer");
+      const countdown = setInterval(() => {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60).toString().padStart(2, "0");
+        const seconds = (timeLeft % 60).toString().padStart(2, "0");
+        timerDisplay.textContent = `${minutes}:${seconds}`;
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          $('#status-box').html(`
+          ⏰ เกินระยะเวลา 5 นาทีแล้ว<br>
+          <small style="color:#ff6b6b;">กรุณาสร้าง QR ใหม่เพื่อทำรายการอีกครั้ง</small>
+        `);
+          $('#qr-box').fadeOut(800);
+        }
+      }, 1000);
+    }
 </script>
 
 
