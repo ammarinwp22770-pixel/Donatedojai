@@ -56,7 +56,7 @@ function broadcastNext() {
 
 function enqueueBroadcast(type, name, amount, comment) {
   alertQueue.push({ type, name, amount, comment, time: new Date().toISOString() });
-  sendToOBS({ type: "donate", name, amount, comment });
+
   if (!isBroadcasting) broadcastNext();
 }
 
