@@ -76,12 +76,16 @@ function saveDonate(name, amount, comment = "") {
 // 📡 ส่งข้อมูลแบบเรียลไทม์ไป OBS
 function sendToOBS(data) {
   let sent = 0;
-  wss.clients.forEach(client => {
-    if (client.readyState === 1) {
-      client.send(JSON.stringify(data));
-      sent++;
-    }
-  });
+wss.clients.forEach(client => {
+  if (client.readyState === 1) {
+    client.send(JSON.stringify({
+      type: "payment_done",
+      name,
+      amount,
+      comment
+    }));
+  }
+});
   console.log(`📡 ส่งข้อมูลไป OBS ${sent} ตัว`, data);
 }
 

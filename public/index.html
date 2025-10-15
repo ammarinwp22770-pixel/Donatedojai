@@ -238,6 +238,44 @@
 
   <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 
+<script>
+  // 🌐 WebSocket รับสถานะการชำระเงิน
+ const ws = new WebSocket(
+    (location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws"
+  );
+
+  ws.onopen = () => console.log("🟢 WebSocket Connected");
+
+  ws.onmessage = e => {
+    const data = JSON.parse(e.data);
+    console.log("💬 ได้รับข้อมูลจาก server:", data);
+
+    // ตรวจจับหลาย type ที่ server อาจส่งมา
+    const paidTypes = ["donate", "payment_done", "paid", "success", "complete"];
+
+    if (paidTypes.includes(data.type)) {
+      console.log("✅ ตรวจจับว่าชำระเงินแล้ว!");
+
+      // 🔄 เคลียร์หน้าทั้งหมดให้พร้อมสร้าง QR ใหม่
+      $("#qr-box").fadeOut(700, () => {
+        $("#qr-box").empty().show();
+        $("#status-box").html("✅ การชำระเงินสำเร็จ! พร้อมรับโดเนทใหม่ 💖");
+      });
+
+      // ✅ รี loader และ input ทั้งหมด
+      $("#loader").fadeOut(300);
+      $("#amount, #msg, #comment").val("");
+
+      // 🔁 รี turnstile อัตโนมัติหลังโดเนทเสร็จ
+      if (window.turnstile) turnstile.reset();
+    }
+  };
+
+  ws.onerror = err => console.error("❌ WebSocket Error:", err);
+  ws.onclose = () => console.warn("⚠️ WebSocket Closed");
+</script>
+
+
   <script>
     let token = "";
 
@@ -355,11 +393,29 @@
     debugger;
     const end = performance.now();
     if (end - start > 50) {
-      document.body.innerHTML = `
-        <div style="display:flex;justify-content:center;align-items:center;height:100vh;background:#0b1020;color:#ff6b6b;font-family:'Prompt',sans-serif;text-align:center;flex-direction:column;">
-          <h1>🚫 ห้ามเปิด Developer Tools</h1>
-          <p>ระบบจะปิดหน้านี้อัตโนมัติ</p>
-        </div>`;
+      // 🔒 ล้างทุก element ออกจากหน้า
+      document.querySelectorAll("body *").forEach(el => el.remove());
+
+      // 🧱 แสดงข้อความเตือนกลางจอ
+      const warn = document.createElement("div");
+      warn.style.cssText = `
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      background:#0b1020;
+      color:#ff6b6b;
+      font-family:'Prompt',sans-serif;
+      text-align:center;
+      flex-direction:column;
+    `;
+      warn.innerHTML = `
+      <h1>🚫 ห้ามเปิด Developer Tools</h1>
+      <p>หน้านี้จะปิดอัตโนมัติ</p>
+    `;
+      document.body.appendChild(warn);
+
+      // ⏱️ ปิดเว็บใน 1.5 วิ
       setTimeout(() => window.close(), 1500);
     }
   }, 2000);
