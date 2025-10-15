@@ -2,10 +2,10 @@
 <html lang="th">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>💖 สนับสนุน H0LLoWx | Donate</title>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
       --blue1: #47b3ff;
@@ -18,7 +18,7 @@
     }
 
     * {
-      box-sizing: border-box
+      box-sizing: border-box;
     }
 
     body {
@@ -26,11 +26,10 @@
       font-family: "Prompt", sans-serif;
       color: var(--text);
       background: radial-gradient(circle at 50% -100px, #16254f 0%, #0b1020 70%);
-      overflow: hidden;
+      overflow-x: hidden;
       min-height: 100vh;
     }
 
-    /* 🌌 พื้นหลังเคลื่อนไหว */
     .bg {
       position: fixed;
       inset: 0;
@@ -50,16 +49,15 @@
       }
     }
 
-    /* 💳 การ์ดกลาง */
     .card {
       max-width: 420px;
       margin: 70px auto;
       padding: 28px;
-      background: rgba(20, 26, 53, .9);
+      background: rgba(20, 26, 53, 0.9);
       border-radius: 22px;
-      box-shadow: 0 0 25px rgba(105, 234, 255, .2),
-        inset 0 0 10px rgba(255, 255, 255, .05);
-      border: 1px solid rgba(105, 234, 255, .2);
+      box-shadow: 0 0 25px rgba(105, 234, 255, 0.2),
+        inset 0 0 10px rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(105, 234, 255, 0.2);
       animation: float 4s ease-in-out infinite;
     }
 
@@ -87,7 +85,6 @@
       margin-bottom: 18px;
     }
 
-    /* 🧾 ช่องกรอก */
     input,
     textarea,
     button {
@@ -99,7 +96,7 @@
       border-radius: 12px;
       font-size: 15px;
       outline: none;
-      transition: .3s;
+      transition: 0.3s;
     }
 
     input,
@@ -113,7 +110,6 @@
       box-shadow: 0 0 8px var(--blue1);
     }
 
-    /* ✨ ปุ่ม */
     button {
       margin-top: 16px;
       background: linear-gradient(90deg, var(--blue1), var(--blue2));
@@ -128,27 +124,22 @@
       box-shadow: 0 0 18px var(--blue2);
     }
 
-    /* 🌀 QR */
-#qr-box {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  margin-top: 20px;
-  min-height: 280px; /* ให้มีที่ว่างตอนยังไม่สร้าง QR */
-}
+    #qr-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      margin-top: 20px;
+      min-height: 280px;
+    }
 
-#qr-box img {
-  display: block;
-  margin: 0 auto;
-  border: 2px solid var(--blue2);
-  border-radius: 16px;
-  padding: 10px;
-  box-shadow: 0 0 30px rgba(105, 234, 255, .3);
-  width: 260px;
-  height: auto;
-}
-
+    #qr-box img {
+      border: 2px solid var(--blue2);
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: 0 0 30px rgba(105, 234, 255, 0.3);
+      width: 260px;
+    }
 
     #loader {
       display: none;
@@ -167,7 +158,7 @@
 
     @keyframes spin {
       100% {
-        transform: rotate(360deg)
+        transform: rotate(360deg);
       }
     }
 
@@ -178,7 +169,6 @@
       min-height: 24px;
     }
 
-    /* 💞 footer */
     footer {
       text-align: center;
       margin-top: 40px;
@@ -190,38 +180,28 @@
       color: var(--pink);
       text-shadow: 0 0 5px var(--pink);
     }
-    .circle-loader {
-  margin: 0 auto 10px auto;
-  border: 3px solid #1c284f;
-  border-top: 3px solid var(--blue2);
-  border-radius: 50%;
-  width: 38px;
-  height: 38px;
-  animation: spin 1s linear infinite;
-}
 
-@keyframes spin {
-  100% { transform: rotate(360deg); }
-}
-/* 🌫️ เอฟเฟกต์เบลอพื้นหลังตอน Turnstile เด้ง */
-#overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(6px);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-  animation: fadeIn 0.4s ease;
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes spin {
-  100% { transform: rotate(360deg); }
-}
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 
@@ -235,9 +215,7 @@
     <textarea id="msg" placeholder="ชื่อของคุณ (จะโชว์บนสตรีม)" rows="2"></textarea>
     <input type="number" id="amount" placeholder="จำนวนเงิน (บาท)">
     <input type="text" id="comment" placeholder="ข้อความแสดงบนหน้าจอ เช่น ดูทีม 20 บาท ❤️">
-<button onclick="generateQR()">⚡ สร้าง QR โดเนท</button>
-
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <button onclick="generateQR()">⚡ สร้าง QR โดเนท</button>
 
     <div id="qr-box"></div>
     <div id="loader">
@@ -247,162 +225,152 @@
     <div id="status-box"></div>
   </div>
 
+  <div style="max-width:420px;margin:0 auto 40px auto;font-size:13px;color:#9aa8d6;line-height:1.6;text-align:center;">
+    🛡️ เว็บไซต์นี้ไม่เก็บข้อมูลส่วนตัวของผู้ใช้งาน
+    ชื่อที่แสดงบนหน้าจอเป็นเพียงชื่อเล่นที่ผู้บริจาคตั้งขึ้นเองเท่านั้น
+    <br><br>
+    <a href="privacy.html" target="_blank" style="color:#69eaff;text-decoration:none;">
+      🔗 อ่านนโยบายความเป็นส่วนตัวฉบับเต็ม
+    </a>
+  </div>
 
-<!-- 🛡️ นโยบายความเป็นส่วนตัว -->
-<div style="max-width:420px;margin:0 auto 40px auto;font-size:13px;color:#9aa8d6;line-height:1.6;text-align:center;">
-  🛡️ เว็บไซต์นี้ไม่เก็บข้อมูลส่วนตัวของผู้ใช้งาน
-  ชื่อที่แสดงบนหน้าจอเป็นเพียงชื่อเล่นที่ผู้บริจาคตั้งขึ้นเองเท่านั้น
-  ชื่อจริงของผู้โอนจะเห็นได้เฉพาะเจ้าของบัญชีเพื่อยืนยันธุรกรรมเท่านั้น
-  <br><br>
-  <a href="privacy.html" target="_blank" style="color:#69eaff;text-decoration:none;">
-    🔗 อ่านนโยบายความเป็นส่วนตัวฉบับเต็ม
-  </a>
-</div>
-
-
-  <footer>© 2025 AMR29 Donatedojai | Designed by <span>AMR29
-      <link rel="stylesheet" href="https://www.youtube.com/@H0LLoWx">
-    </span></footer>
+  <footer>© 2025 AMR29 Donatedojai | Designed by <span>AMR29</span></footer>
 
   <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
   <script>
-  const ws = new WebSocket(
-      (location.protocol === "https:" ? "wss://" : "ws://") +
-      location.host +
-      "/ws"
-    );
-  ws.onmessage = e => {
-      const data = JSON.parse(e.data);
-      if (data.type === "donate" || data.type === "payment_done") {
-        $("#qr-box").fadeOut(700, () => $("#qr-box").empty().show());
-        $("#loader").hide();
-        $("#amount,#msg,#comment").val("");
-        $("#status-box").html("✅ การชำระเงินสำเร็จ! พร้อมรับโดเนทใหม่ 💖");
-      }
-    };
-</script>
+    let token = "";
 
-<script>
-  // 🛡️ ป้องกัน Inspect / View Source / Debug
-  document.addEventListener('contextmenu', event => event.preventDefault()); // ❌ คลิกขวา
-  document.onkeydown = function (e) {
-    // ❌ ปิด F12, Ctrl+Shift+I, Ctrl+U, Ctrl+S, Ctrl+P
-    if (
-      e.keyCode === 123 || // F12
-      (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) || // Ctrl+Shift+I/J/C
-      (e.ctrlKey && ['U', 'S', 'P'].includes(e.key.toUpperCase())) // Ctrl+U/S/P
-    ) {
-      e.preventDefault();
-      e.stopPropagation();
-      alert("🚫 โหมดนักพัฒนาไม่สามารถใช้งานได้บนหน้านี้");
-      return false;
-    }
-  };
-
-  // 🚫 ป้องกัน console/debug ด้วย loop trick
-  (function () {
-    const handler = setInterval(() => {
-      const before = new Date();
-      debugger; // ดักเปิด Inspect
-      const after = new Date();
-      if (after - before > 100) {
-        document.body.innerHTML =
-          "<h1 style='color:#ff6b6b;text-align:center;margin-top:30vh;'>🚫 การเข้าถึง Developer Tools ถูกปิดใช้งาน</h1>";
-        clearInterval(handler);
-      }
-    }, 1000);
-  })();
-</script>
-
-<script>
-  let token = "";
-
-    // 🌐 Callback จาก Cloudflare เมื่อยืนยันเสร็จ
-   function onTurnstileSuccess(t) {
+    // ✅ Callback จาก Cloudflare
+    function onTurnstileSuccess(t) {
       token = t;
       console.log("✅ Turnstile success:", t);
-      $('#overlay').fadeOut(300); // ✅ ซ่อน overlay หลังผ่าน
+      $('#overlay').fadeOut(300);
       actuallyGenerateQR();
     }
-    // ⚡ ฟังก์ชันที่ถูกเรียกเมื่อกด “สร้าง QR โดเนท”
-    // ⚡ ฟังก์ชันที่ถูกเรียกเมื่อกด “สร้าง QR โดเนท”
-  async function generateQR() {
-    token = "";
-    $('#qr-box').empty();
-    $('#status-box').html("");
-    $('#loader').hide();
 
-    // ✅ แสดง overlay + Turnstile
-    $('#overlay').fadeIn(300);
-    $('#turnstile-box').fadeIn(300);
+    // ⚡ กดสร้าง QR → เด้ง CAPTCHA
+    async function generateQR() {
+      token = "";
+      $('#qr-box').empty();
+      $('#status-box').html("");
+      $('#loader').hide();
 
-        // 🔁 เอฟเฟกต์โหลดก่อนรีเซ็ต CAPTCHA
-      }
+      $('#overlay').fadeIn(300);
+      $('#turnstile-box').fadeIn(300);
 
-    // ⚙️ สร้าง QR จริงหลังผ่าน CAPTCHA
+      // 🔁 รีเซ็ต CAPTCHA ทุกครั้ง
+      setTimeout(() => {
+        if (window.turnstile) turnstile.reset();
+      }, 500);
+    }
+
+    // ⚙️ หลังผ่าน CAPTCHA → สร้าง QR จริง
     async function actuallyGenerateQR() {
-        const amount = parseFloat($('#amount').val());
-        const name = $('#msg').val().trim() || "ไม่ระบุชื่อ";
-        const comment = $('#comment').val().trim() || "";
+      console.log("🎟️ Token:", token);
+      const amount = parseFloat($('#amount').val());
+      const name = $('#msg').val().trim() || "ไม่ระบุชื่อ";
+      const comment = $('#comment').val().trim() || "";
+      if (!amount) return alert("กรุณาระบุจำนวนเงิน");
 
-        if (!amount) return alert("กรุณาระบุจำนวนเงิน");
+      $('#status-box').html("🕓 กำลังสร้าง QR...");
+      $('#loader').show();
 
-        $('#status-box').html("🕓 กำลังสร้าง QR...");
-        $('#loader').show();
-
-        try {
-          const res = await fetch("/generateQR", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ amount, name, comment, token })
-          });
-          const data = await res.json();
-
-          $('#loader').hide();
-          $('#qr-box').html(`<img src="${data.result}" alt="QR พร้อมเพย์">`);
-          $('#status-box').html(`
+      try {
+        const res = await fetch("/generateQR", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount, name, comment, token })
+        });
+        const data = await res.json();
+        $('#loader').hide();
+        $('#qr-box').html(`<img src="${data.result}" alt="QR พร้อมเพย์">`);
+        $('#status-box').html(`
         ⚠️ กรุณาชำระเงินภายใน <b id="timer">05:00</b> นาที<br>
         หากสแกนแล้วไม่หายไม่ต้องตกใจ<br>
         รอสักครู่...ให้ระบบตรวจสอบเงินจริงที่โอน
       `);
-          $('#turnstile-box').fadeOut(300); // ซ่อน CAPTCHA หลังใช้งาน
-          turnstile.reset(); // ✅ รีเซ็ต Cloudflare Turnstile ให้พร้อมใช้รอบใหม่
-          startCountdown();
-        } catch (err) {
-          $('#status-box').text("❌ เกิดข้อผิดพลาดในการสร้าง QR");
-        }
+        $('#turnstile-box').fadeOut(300);
+        startCountdown();
+        $('#overlay').fadeOut(300);
+      } catch (err) {
+        console.error(err);
+        $('#status-box').text("❌ เกิดข้อผิดพลาดในการสร้าง QR");
       }
+    }
 
-    // 🕒 นับถอยหลัง 5 นาที
+    // 🕒 นับถอยหลัง
     function startCountdown() {
       let timeLeft = 300;
       const timerDisplay = document.getElementById("timer");
       const countdown = setInterval(() => {
         timeLeft--;
-        const minutes = Math.floor(timeLeft / 60).toString().padStart(2, "0");
-        const seconds = (timeLeft % 60).toString().padStart(2, "0");
-        timerDisplay.textContent = `${minutes}:${seconds}`;
+        const m = Math.floor(timeLeft / 60).toString().padStart(2, "0");
+        const s = (timeLeft % 60).toString().padStart(2, "0");
+        timerDisplay.textContent = `${m}:${s}`;
         if (timeLeft <= 0) {
           clearInterval(countdown);
           $('#status-box').html(`
-        ⏰ เกินระยะเวลา 5 นาทีแล้ว<br>
-        <small style="color:#ff6b6b;">กรุณาสร้าง QR ใหม่เพื่อทำรายการอีกครั้ง</small>
-      `);
+          ⏰ เกินระยะเวลา 5 นาทีแล้ว<br>
+          <small style="color:#ff6b6b;">กรุณาสร้าง QR ใหม่เพื่อทำรายการอีกครั้ง</small>
+        `);
           $('#qr-box').fadeOut(800);
         }
       }, 1000);
     }
+  </script>
 
+  <!-- ✅ Turnstile อยู่ล่างสุดหลังประกาศฟังก์ชันทั้งหมด -->
+  <div id="overlay">
+    <div id="turnstile-box"
+      style="background:rgba(20,26,53,0.95);padding:25px;border-radius:20px;box-shadow:0 0 25px #69eaff;text-align:center;">
+      <h3 style="margin-bottom:10px;color:#69eaff;">🔒 ยืนยันก่อนสร้าง QR</h3>
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAAB6qa7Fg3qEUiBuc" data-callback="onTurnstileSuccess"></div>
+    </div>
+  </div>
+
+<script>
+  // 🚫 ป้องกันการกด F12, Ctrl+Shift+I/J/C และ Ctrl+U/S/P
+  document.addEventListener("keydown", e => {
+    if (
+      e.key === "F12" ||
+      (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key.toUpperCase())) ||
+      (e.ctrlKey && ["U", "S", "P"].includes(e.key.toUpperCase()))
+    ) {
+      e.preventDefault();
+      alert("🚫 ห้ามเปิดเครื่องมือสำหรับนักพัฒนา (Developer Tools)");
+      return false;
+    }
+  });
+
+  // 🚫 ป้องกันคลิกขวา
+  document.addEventListener("contextmenu", e => {
+    e.preventDefault();
+    alert("🚫 คลิกขวาถูกปิดใช้งาน");
+  });
+
+  // 🕵️‍♂️ ตรวจจับ Inspect แบบเปิด Console
+  setInterval(() => {
+    const start = performance.now();
+    debugger;
+    const end = performance.now();
+    if (end - start > 50) {
+      document.body.innerHTML = `
+        <div style="display:flex;justify-content:center;align-items:center;height:100vh;background:#0b1020;color:#ff6b6b;font-family:'Prompt',sans-serif;text-align:center;flex-direction:column;">
+          <h1>🚫 ห้ามเปิด Developer Tools</h1>
+          <p>ระบบจะปิดหน้านี้อัตโนมัติ</p>
+        </div>`;
+      setTimeout(() => window.close(), 1500);
+    }
+  }, 2000);
 </script>
 
-<div id="overlay">
-  <div id="turnstile-box"
-    style="background:rgba(20,26,53,0.95);padding:25px;border-radius:20px;box-shadow:0 0 25px #69eaff;text-align:center;">
-    <h3 style="margin-bottom:10px;color:#69eaff;">🔒 ยืนยันก่อนสร้าง QR</h3>
-    <div class="cf-turnstile" data-sitekey="0x4AAAAAAB6qa7Fg3qEUiBuc" data-callback="onTurnstileSuccess"></div>
-  </div>
-</div>
+
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
 
 </body>
+
+
 
 </html>

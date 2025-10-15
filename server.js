@@ -91,6 +91,7 @@ import fetch from "node-fetch";
 // ✅ API สร้าง QR พร้อมบันทึกข้อมูลไว้
 app.post("/generateQR", async (req, res) => {
   const { amount, name, comment, token } = req.body;
+  console.log("🧩 Token ที่ได้รับ:", token);
   if (!amount) return res.status(400).json({ error: "กรุณาระบุจำนวนเงิน" });
 
   // ✅ ตรวจสอบ CAPTCHA จาก Cloudflare Turnstile
