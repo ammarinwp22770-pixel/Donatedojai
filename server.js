@@ -98,7 +98,7 @@ app.post("/generateQR", async (req, res) => {
     const verify = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `secret=YOUR_SECRET_KEY&response=${token}` // 🔑 เปลี่ยน YOUR_SECRET_KEY เป็นของจริงจาก Cloudflare
+      body: `secret=0x4AAAAAAB6qazXLsDqjv-hftjzkBFfNbS0&response=${token}`
     });
 
     const data = await verify.json();
