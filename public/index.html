@@ -203,7 +203,22 @@
 @keyframes spin {
   100% { transform: rotate(360deg); }
 }
-
+/* 🌫️ เอฟเฟกต์เบลอพื้นหลังตอน Turnstile เด้ง */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeIn 0.4s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
   </style>
 </head>
 
@@ -305,23 +320,22 @@
   let token = "";
 
   // 🌐 Cloudflare Turnstile callback เมื่อยืนยันเสร็จ
-  function onTurnstileSuccess(t) {
-      token = t;
-      console.log("✅ Turnstile success:", t);
-      actuallyGenerateQR(); // เริ่มสร้าง QR จริง
-    }
+ function onTurnstileSuccess(t) {
+    token = t;
+    console.log("✅ Turnstile success:", t);
+    $("#overlay").fadeOut(300);
+    actuallyGenerateQR();
+  }
 
-    // ⚡ ฟังก์ชันที่ถูกเรียกเมื่อกดปุ่ม “สร้าง QR โดเนท”
-    async function generateQR() {
-      // รีเซตทุกอย่าง
-      token = "";
-      $('#qr-box').empty();
-      $('#status-box').html("");
-      $('#loader').hide();
+  async function generateQR() {
+    token = "";
+    $('#qr-box').empty();
+    $('#status-box').html("");
+    $('#loader').hide();
 
-      // แสดง CAPTCHA Cloudflare
-      $('#turnstile-box').fadeIn(300);
-    }
+    // แสดง overlay + CAPTCHA
+    $("#overlay").fadeIn(300);
+  }
 
   // ⚙️ สร้าง QR จริงหลังจากผ่าน CAPTCHA
  async function actuallyGenerateQR() {
@@ -377,6 +391,13 @@
     }
 </script>
 
+<div id="overlay">
+  <div id="turnstile-box"
+    style="background:rgba(20,26,53,0.95);padding:25px;border-radius:20px;box-shadow:0 0 25px #69eaff;text-align:center;">
+    <h3 style="margin-bottom:10px;color:#69eaff;">🔒 ยืนยันก่อนสร้าง QR</h3>
+    <div class="cf-turnstile" data-sitekey="0x4AAAAAAB6qa7Fg3qEUiBuc" data-callback="onTurnstileSuccess"></div>
+  </div>
+</div>
 
 </body>
 
