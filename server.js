@@ -85,11 +85,33 @@ function sendToOBS(data) {
   console.log(`📡 ส่งข้อมูลไป OBS ${sent} ตัว`, data);
 }
 
+// เพิ่มด้านบนสุดสุดของไฟล์
+import fetch from "node-fetch";
+
 // ✅ API สร้าง QR พร้อมบันทึกข้อมูลไว้
-app.post("/generateQR", (req, res) => {
-  const { amount, name, comment } = req.body;
+app.post("/generateQR", async (req, res) => {
+  const { amount, name, comment, token } = req.body;
   if (!amount) return res.status(400).json({ error: "กรุณาระบุจำนวนเงิน" });
 
+  // ✅ ตรวจสอบ CAPTCHA จาก Cloudflare Turnstile
+  try {
+    const verify = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `secret=YOUR_SECRET_KEY&response=${token}` // 🔑 เปลี่ยน YOUR_SECRET_KEY เป็นของจริงจาก Cloudflare
+    });
+
+    const data = await verify.json();
+    if (!data.success) {
+      console.log("❌ CAPTCHA verification failed");
+      return res.status(400).json({ error: "Captcha verification failed" });
+    }
+  } catch (err) {
+    console.error("❌ Error verifying CAPTCHA:", err);
+    return res.status(500).json({ error: "Captcha verification error" });
+  }
+
+  // ✅ ดำเนินการต่อถ้า CAPTCHA ผ่าน
   const payload = generatePayload("0815404297", { amount: parseFloat(amount) });
   QRCode.toDataURL(payload, (err, url) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -107,6 +129,7 @@ app.post("/generateQR", (req, res) => {
     res.json({ result: url });
   });
 });
+
 
 // ✅ ดึงรายชื่อโดเนทย้อนหลัง (แก้ให้ดึงไฟล์ใหม่ทุกครั้ง)
 app.get("/donates", (req, res) => {
