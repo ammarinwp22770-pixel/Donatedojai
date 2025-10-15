@@ -56,6 +56,7 @@ function broadcastNext() {
 
 function enqueueBroadcast(type, name, amount, comment) {
   alertQueue.push({ type, name, amount, comment, time: new Date().toISOString() });
+  sendToOBS({ type: "donate", name, amount, comment });
   if (!isBroadcasting) broadcastNext();
 }
 
@@ -76,16 +77,12 @@ function saveDonate(name, amount, comment = "") {
 // 📡 ส่งข้อมูลแบบเรียลไทม์ไป OBS
 function sendToOBS(data) {
   let sent = 0;
-wss.clients.forEach(client => {
-  if (client.readyState === 1) {
-    client.send(JSON.stringify({
-      type: "payment_done",
-      name,
-      amount,
-      comment
-    }));
-  }
-});
+  wss.clients.forEach(client => {
+    if (client.readyState === 1) {
+      client.send(JSON.stringify(data));
+      sent++;
+    }
+  });
   console.log(`📡 ส่งข้อมูลไป OBS ${sent} ตัว`, data);
 }
 
@@ -136,11 +133,12 @@ app.post("/generateQR", async (req, res) => {
 });
 
 
-// ✅ ดึงรายชื่อโดเนทย้อนหลัง (แก้ให้ดึงไฟล์ใหม่ทุกครั้ง)
+// ✅ API สำหรับดึงประวัติโดเนททั้งหมด
 app.get("/donates", (req, res) => {
   try {
+    if (!fs.existsSync(donateFile)) return res.json([]);
     const data = JSON.parse(fs.readFileSync(donateFile, "utf8"));
-    res.json(data.reverse());
+    res.json(data);
   } catch (err) {
     console.error("❌ อ่าน donates.json ไม่ได้:", err);
     res.json([]);
