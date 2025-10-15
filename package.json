@@ -17,6 +17,7 @@
     "fs": "^0.0.1-security",
     "lodash": "^4.17.21",
     "multer": "^2.0.2",
+    "node-fetch": "^3.3.2",
     "node-telegram-bot-api": "^0.66.0",
     "promptpay-qr": "^0.5.0",
     "qrcode": "^1.5.4",
