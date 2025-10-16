@@ -1,332 +1,265 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>📊 Dashboard | H0LLoWx Donate</title>
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>🎛️ Dashboard | H0LLoWx Donate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #141a35;
+      --accent: #69eaff;
+      --text: #e9f3ff;
+      --muted: #9aa8d6;
+    }
 
-<style>
-body {
-  margin: 0;
-  background: #0b1020;
-  color: #e9f3ff;
-  font-family: "Prompt", sans-serif;
-}
-.container {
-  max-width: 1000px;
-  margin: 40px auto;
-  padding: 20px;
-}
-h1 {
-  text-align: center;
-  color: #69eaff;
-  font-size: 32px;
-  letter-spacing: 1px;
-  text-shadow: 0 0 15px #47b3ff88;
-}
-.card {
-  background: #141a35;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 12px 30px rgba(0,0,0,.3);
-  margin-bottom: 20px;
-  position: relative;
-  overflow: hidden;
-}
-.card::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: radial-gradient(circle at top, rgba(71,179,255,0.05), transparent 60%);
-  pointer-events: none;
-}
-.total-box {
-  font-size: 24px;
-  font-weight: 700;
-  color: #47ffa1;
-  margin-bottom: 15px;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-}
-th, td {
-  padding: 10px;
-  border-bottom: 1px solid #2b2f55;
-}
-th {
-  background: #1e254a;
-  color: #69eaff;
-}
-td {
-  color: #fff;
-}
-button.alert-btn {
-  background: #47b3ff;
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  padding: 6px 12px;
-  cursor: pointer;
-  transition: 0.2s;
-  font-family: "Prompt";
-}
-button.alert-btn:hover {
-  background: #69eaff;
-  transform: scale(1.05);
-}
+    * {
+      box-sizing: border-box
+    }
 
-/* 🎨 Pagination ปุ่มสวยเนียน */
-#pagination {
-  text-align: center;
-  margin-top: 24px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-}
-#pagination button {
-  background: linear-gradient(145deg, #1b2550, #222b5a);
-  border: 2px solid #47b3ff;
-  color: #e9f3ff;
-  font-family: "Prompt";
-  padding: 8px 18px;
-  font-weight: 600;
-  border-radius: 12px;
-  cursor: pointer;
-  box-shadow: 0 0 10px rgba(71,179,255,0.3);
-  transition: all 0.2s ease;
-}
-#pagination button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 0 18px rgba(105,234,255,0.6);
-  border-color: #69eaff;
-}
-#pagination button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-#pagination #page-info {
-  font-size: 16px;
-  color: #a7b8ff;
-  background: rgba(25,35,70,0.5);
-  border-radius: 10px;
-  padding: 6px 14px;
-  box-shadow: 0 0 10px rgba(71,179,255,0.25) inset;
-  letter-spacing: 0.5px;
-}
+    body {
+      font-family: "Prompt", sans-serif;
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+    }
 
-/* ✨ แถวใหม่มี glow effect */
-tr.new-row {
-  background: rgba(71,179,255,0.15);
-  animation: highlightFade 2s ease-out;
-}
-@keyframes highlightFade {
-  0% {background: rgba(105,234,255,0.45);}
-  100% {background: transparent;}
-}
-</style>
+    .navbar {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      background: #101530;
+      padding: 15px 0;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .navbar a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .navbar a:hover {
+      text-shadow: 0 0 8px var(--accent);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      background: var(--panel);
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(105, 234, 255, 0.15);
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    th {
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    tr:nth-child(even) {
+      background: #1c2448;
+    }
+
+    button.alert-btn {
+      background: var(--accent);
+      border: none;
+      padding: 6px 10px;
+      border-radius: 10px;
+      color: #000;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button.alert-btn:hover {
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .pagination button {
+      background: #1c2448;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    .pagination button:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .total-box {
+      text-align: right;
+      margin-top: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 18px;
+    }
+  </style>
 </head>
 
 <body>
-<div class="container">
-  <h1>📊 Dashboard การบริจาค</h1>
-  <div class="card">
-    <div class="total-box">💰 ยอดบริจาครวม: <span id="total">0</span> บาท</div>
-    <table>
+
+  <div class="navbar">
+    <a href="index.html">หน้าโดเนท</a>
+    <a href="customize.html">แต่งระบบ</a>
+    <a href="#">แนะนำ</a>
+  </div>
+
+  <div class="container">
+    <h1>📊 สรุปโดเนทล่าสุด</h1>
+    <table id="donateTable">
       <thead>
         <tr>
-          <th>ชื่อผู้บริจาค</th>
-          <th>จำนวน (บาท)</th>
+          <th>วันที่</th>
+          <th>ชื่อ</th>
+          <th>จำนวนเงิน</th>
+          <th>ช่องทาง</th>
           <th>ข้อความ</th>
-          <th>เวลา</th>
-          <th>แจ้งเตือนซ้ำ</th>
+          <th>Alert</th>
         </tr>
       </thead>
-      <tbody id="donate-table"></tbody>
+      <tbody></tbody>
     </table>
-    <div id="pagination"></div>
+
+    <div class="pagination" id="pagination"></div>
+    <div class="total-box" id="totalBox">รวมทั้งหมด: 0 บาท</div>
   </div>
-</div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script>
-  let allDonates = [];
-  let currentPage = 1;
-  const perPage = 10;
+  <script>
+    // 📁 ตัวอย่างข้อมูลโดเนท (ในระบบจริงดึงจาก donates.json หรือ API)
+    const donations = [
+      { date: "2025-10-09 14:01", name: "Anonymous", amount: 20, channel: "PromptPay", message: "กองหน้า 10ล้าน ใครดีครับ", },
+      { date: "2025-10-08 14:44", name: "Anonymous", amount: 20, channel: "PromptPay", message: "Apeceiei C6 ดูทีมครับผม", },
+      { date: "2025-10-08 14:29", name: "ZLaPAe", amount: 20, channel: "PromptPay", message: "ดูทีมผม Nicolaspepez", },
+      { date: "2025-10-08 14:11", name: "JJack", amount: 20, channel: "PromptPay", message: "ดูทีมครับ JJackzx", },
+      { date: "2025-10-07 14:58", name: "Anonymous", amount: 15, channel: "PromptPay", message: "https://youtube.com/watch?v=RiICKdl1IM0", },
+      { date: "2025-10-07 14:12", name: "madpierrot", amount: 20, channel: "PromptPay", message: "manuj7 แผนA2 เสริมตรงไหน", },
+      { date: "2025-10-07 13:52", name: "Yklknk1ute", amount: 20, channel: "True Wallet", message: "ดูทีมให้น่อยครับพี่", },
+      { date: "2025-10-07 13:37", name: "Anonymous", amount: 20, channel: "PromptPay", message: "ดูทีม cigaduses A2", },
+      { date: "2025-10-06 14:17", name: "ErEr0", amount: 30, channel: "True Wallet", message: "มาเล่นด้วยครับ", },
+      { date: "2025-10-03 14:37", name: "Anonymous", amount: 30, channel: "PromptPay", message: "แผน B1 JocelynFloress", },
+      { date: "2025-09-29 12:11", name: "test", amount: 10, channel: "PromptPay", message: "ทดสอบระบบ", },
+    ];
 
-  // 🌐 โหลดข้อมูลเริ่มต้น
-  async function loadDashboard() {
-   const res = await fetch("/donates?" + Date.now(), { cache: "no-store" });
-    const data = await res.json();
+    // 🔁 เรียงวันที่ใหม่สุดไว้บน
+    donations.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    if (!Array.isArray(data) || data.length === 0) {
-      console.warn("⚠️ ไม่มีข้อมูลโดเนทในระบบ");
-      $('#total').text("0");
-      $('#donate-table').html(`<tr><td colspan="5" style="text-align:center;color:#a7b8ff;">ยังไม่มีข้อมูลบริจาค</td></tr>`);
-      return;
-    }
+    let currentPage = 1;
+    const rowsPerPage = 10;
 
-    // ✅ เรียงจากใหม่ -> เก่า (แก้กรณี format ไทย)
-    allDonates = data.sort((a, b) => {
-      const parse = t => {
-        // แปลง 13/10/2568 20:40:47 → YYYY-MM-DD HH:mm:ss
-        const [d, m, yTime] = t.split("/");
-        if (!yTime) return 0;
-        const [y, rest] = yTime.split(" ");
-        const year = parseInt(y) - 543; // แปลง พ.ศ. → ค.ศ.
-        return new Date(`${year}-${m}-${d} ${rest}`).getTime();
-      };
-      return parse(b.time) - parse(a.time);
-    });
+    async function loadDonations() {
+        try {
+          const res = await fetch("/donates");
+          const data = await res.json();
 
+          // เรียงจากใหม่สุดไปเก่าสุด
+          donations = data.sort((a, b) => new Date(b.time) - new Date(a.time));
+          renderTable();
+        } catch (err) {
+          console.error("❌ โหลดข้อมูลไม่ได้:", err);
+        }
+      }
 
-    // ✅ ให้เริ่มที่หน้าแรกเสมอ
-    currentPage = 1;
-    renderPage(currentPage);
-    updateTotal();
-    renderPagination();
-  }
+      function renderTable() {
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const pageData = donations.slice(start, end);
 
-  // 🎯 แสดงข้อมูลตามหน้า
-  function renderPage(page) {
-    const start = (page - 1) * perPage;
-    const end = start + perPage;
-    const items = allDonates.slice(start, end);
+        const tbody = document.querySelector("#donateTable tbody");
+        tbody.innerHTML = "";
 
-    $('#donate-table').html(items.map(d => `
-    <tr>
-      <td>${d.name}</td>
-      <td>${d.amount}</td>
-      <td>${d.comment || "-"}</td>
-      <td>${d.time}</td>
-      <td><button class="alert-btn" data-name="${d.name}" data-amount="${d.amount}" data-comment="${d.comment || "-"}">🔔 Alert</button></td>
-    </tr>
-  `).join(''));
-
-    bindAlertButtons();
-    $('#page-info').text(`หน้า ${currentPage} / ${Math.ceil(allDonates.length / perPage)}`);
-  }
-
-  // 💰 รวมยอดบริจาค
-  function updateTotal() {
-    // แปลงค่าจำนวนเงินให้เป็นตัวเลขจริงก่อนรวม
-    const total = allDonates.reduce((sum, d) => {
-      const amt = parseFloat(String(d.amount).replace(/[^0-9.]/g, "")) || 0;
-      return sum + amt;
-    }, 0);
-
-    $('#total').text(total.toLocaleString("th-TH", { minimumFractionDigits: 0 }));
-  }
-
-  // 🧩 กด Alert แล้วเด้ง OBS จริง (ไม่เพิ่มเข้า Dashboard)
-  async function bindAlertButtons() {
-      $('.alert-btn').off('click').on('click', async function () {
-        const name = $(this).data('name');
-        const amount = $(this).data('amount');
-        const comment = $(this).data('comment') || "ขอบคุณสำหรับการสนับสนุน 💖";
-
-        const res = await fetch("/test-alert", { // ✅ เก็บไว้ในตัวแปร res
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name,
-            amount,
-            comment,
-            type: "alert_repeat"
-          })
+        pageData.forEach(d => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+        <td>${d.time || "-"}</td>
+        <td>${d.name}</td>
+        <td>${d.amount.toFixed(2)} บาท</td>
+        <td>${d.channel || "PromptPay"}</td>
+        <td>${d.comment || ""}</td>
+        <td><button class="alert-btn" onclick="playAlert('${d.name}','${d.amount}','${d.comment || ''}')">Alert 🔔</button></td>
+      `;
+          tbody.appendChild(tr);
         });
 
-        const result = await res.json();
-        if (result.ok) {
-          console.log(`✅ แจ้งเตือนซ้ำสำเร็จ (${name} - ${amount}฿)`);
-        } else {
-          console.warn("❌ ส่ง Alert ไม่สำเร็จ:", result);
-        }
-      });
-    }
-
-  // 🔊 เสียงแจ้งเตือน
-  let currentAudio = null;
-  function playSound() {
-    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
-    currentAudio = new Audio("notify.mp3");
-    currentAudio.volume = 0.5;
-    currentAudio.play();
-  }
-
-
-
-  // 🔢 Pagination
-  function renderPagination() {
-    const totalPages = Math.ceil(allDonates.length / perPage);
-    $('#pagination').html(`
-    <button id="firstPage" ${currentPage === 1 ? "disabled" : ""}>⏮</button>
-    <button id="prevPage" ${currentPage === 1 ? "disabled" : ""}>⬅️</button>
-    <span id="page-info"></span>
-    <button id="nextPage" ${currentPage === totalPages ? "disabled" : ""}>➡️</button>
-    <button id="lastPage" ${currentPage === totalPages ? "disabled" : ""}>⏭</button>
-  `);
-
-    $('#page-info').text(`หน้า ${currentPage} / ${totalPages || 1}`);
-    $('#firstPage').on('click', () => { currentPage = 1; renderPage(currentPage); renderPagination(); });
-    $('#lastPage').on('click', () => { currentPage = totalPages; renderPage(currentPage); renderPagination(); });
-    $('#prevPage').on('click', () => { if (currentPage > 1) { currentPage--; renderPage(currentPage); renderPagination(); } });
-    $('#nextPage').on('click', () => { if (currentPage < totalPages) { currentPage++; renderPage(currentPage); renderPagination(); } });
-  }
-
-
-  // 🌐 WebSocket
-  let ws = null;
-  function connectWS() {
-    // ✅ รองรับทั้ง localhost และ Render โดยอัตโนมัติ
-    const WS_URL = location.origin.replace(/^http/, "ws") + "/ws";
-    ws = new WebSocket(WS_URL);
-
-    ws.onopen = () => console.log("✅ Dashboard เชื่อม OBS แล้ว");
-    ws.onclose = () => setTimeout(connectWS, 3000);
-    ws.onerror = () => console.log("⚠️ WebSocket Error");
-
-    ws.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-
-      // ✅ โดเนทจริงเท่านั้น (ไม่ใช่จากปุ่ม Alert)
-      if (data.type === "donate" && !data.fromDashboard) {
-        addDonateRealtime(data); // เพิ่มโดเนทใหม่เข้า list บนหน้าเว็บ
+        renderPagination();
+        renderTotal();
       }
-    };
-  }
-  connectWS();
 
-  // 📡 เพิ่มข้อมูลเรียลไทม์ (เฉพาะตอนโดเนทจริง)
-  function addDonateRealtime(d) {
-    allDonates.unshift({
-      name: d.name,
-      amount: d.amount,
-      comment: d.comment || "-",
-      time: new Date().toLocaleString("th-TH")
-    });
+      function renderPagination() {
+        const totalPages = Math.ceil(donations.length / rowsPerPage);
+        const pag = document.getElementById("pagination");
+        pag.innerHTML = `
+      <button onclick="goPage(1)">⏮ หน้าแรก</button>
+      <button onclick="goPage(${Math.max(1, currentPage - 1)})">⬅</button>
+      <span>หน้า ${currentPage} / ${totalPages}</span>
+      <button onclick="goPage(${Math.min(totalPages, currentPage + 1)})">➡</button>
+      <button onclick="goPage(${totalPages})">หน้าสุดท้าย ⏭</button>
+    `;
+      }
 
-    currentPage = 1; // ✅ กลับมาหน้าแรก
-    renderPage(currentPage);
-    
-    updateTotal();
-    glowTotal();
-    playSound();
-    document.querySelector(".container").scrollTo({ top: 0, behavior: "smooth" });
-  }
+      function goPage(p) {
+        const totalPages = Math.ceil(donations.length / rowsPerPage);
+        if (p < 1 || p > totalPages) return;
+        currentPage = p;
+        renderTable();
+      }
 
-  // 🚀 เริ่มต้น
-  loadDashboard();
-  setInterval(loadDashboard, 30000); // โหลดใหม่ทุก 30 วิ กันข้อมูลไม่ตรง
+      // 💰 รวมยอดทั้งหมด (ไม่รวม test / ทดสอบ)
+      function renderTotal() {
+        const total = donations
+          .filter(d => !d.comment?.includes("ทดสอบ") && !d.name?.toLowerCase().includes("test"))
+          .reduce((sum, d) => sum + (parseFloat(d.amount) || 0), 0);
+        document.getElementById("totalBox").innerText = `รวมทั้งหมด: ${total.toFixed(2)} บาท`;
+      }
+
+      // 🔔 กดปุ่ม Alert เพื่อเล่นโดเนทย้อนหลัง
+      function playAlert(name, amount, comment) {
+        fetch("/test-alert", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, amount, comment })
+        })
+          .then(() => {
+            alert(`🔔 เล่นโดเนทย้อนหลัง: ${name} (${amount} บาท)\n💬 ${comment}`);
+          })
+          .catch(err => console.error("❌ ส่ง Alert ไม่ได้:", err));
+      }
+
+      // 🔄 โหลดข้อมูลตอนเปิดหน้า
+      loadDonations();
+  </script>
 
   
-</script>
-
-
 </body>
+
 </html>
