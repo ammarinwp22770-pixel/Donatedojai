@@ -157,19 +157,8 @@
 
   <script>
     // 📁 ตัวอย่างข้อมูลโดเนท (ในระบบจริงดึงจาก donates.json หรือ API)
-    const donations = [
-      { date: "2025-10-09 14:01", name: "Anonymous", amount: 20, channel: "PromptPay", message: "กองหน้า 10ล้าน ใครดีครับ", },
-      { date: "2025-10-08 14:44", name: "Anonymous", amount: 20, channel: "PromptPay", message: "Apeceiei C6 ดูทีมครับผม", },
-      { date: "2025-10-08 14:29", name: "ZLaPAe", amount: 20, channel: "PromptPay", message: "ดูทีมผม Nicolaspepez", },
-      { date: "2025-10-08 14:11", name: "JJack", amount: 20, channel: "PromptPay", message: "ดูทีมครับ JJackzx", },
-      { date: "2025-10-07 14:58", name: "Anonymous", amount: 15, channel: "PromptPay", message: "https://youtube.com/watch?v=RiICKdl1IM0", },
-      { date: "2025-10-07 14:12", name: "madpierrot", amount: 20, channel: "PromptPay", message: "manuj7 แผนA2 เสริมตรงไหน", },
-      { date: "2025-10-07 13:52", name: "Yklknk1ute", amount: 20, channel: "True Wallet", message: "ดูทีมให้น่อยครับพี่", },
-      { date: "2025-10-07 13:37", name: "Anonymous", amount: 20, channel: "PromptPay", message: "ดูทีม cigaduses A2", },
-      { date: "2025-10-06 14:17", name: "ErEr0", amount: 30, channel: "True Wallet", message: "มาเล่นด้วยครับ", },
-      { date: "2025-10-03 14:37", name: "Anonymous", amount: 30, channel: "PromptPay", message: "แผน B1 JocelynFloress", },
-      { date: "2025-09-29 12:11", name: "test", amount: 10, channel: "PromptPay", message: "ทดสอบระบบ", },
-    ];
+    let donations = [];
+      
 
     // 🔁 เรียงวันที่ใหม่สุดไว้บน
     donations.sort((a, b) => new Date(b.date) - new Date(a.date));
